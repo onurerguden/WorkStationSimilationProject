@@ -1,8 +1,11 @@
 public class Station {
     //String StationID
+
     //int maxCapacity
     //Boolean multiFlag
+
     //bool fifoFlag
+
     //taskTypes
     //int stationSpeed
 
