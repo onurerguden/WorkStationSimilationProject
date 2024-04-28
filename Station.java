@@ -9,6 +9,6 @@ public class Station {
 
     //taskTypes
     //int stationSpeed
-
+//Station
     //methods constructor, getStationID, getMaxCapacity, isMultiFlag, isFifoFlag, getTaskTypes, getStationSpeed
 }
