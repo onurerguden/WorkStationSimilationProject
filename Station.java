@@ -1,4 +1,5 @@
 public class Station {
+
     //String StationID
 
     //int maxCapacity
