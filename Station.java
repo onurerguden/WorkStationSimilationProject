@@ -92,6 +92,13 @@ public class Station {
             this.stationSpeed = stationSpeed;
         }
 
+        public void setType2(){
+            taskType = TaskTypes.TYPE2;
+        }
+        public void setType3(){
+        taskType = TaskTypes.TYPE3;
+        }
+
      }
 
 

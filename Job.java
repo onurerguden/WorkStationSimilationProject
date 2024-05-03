@@ -19,6 +19,13 @@ public class Job {
         this.deadline = deadline;
         this.startTime = startTime;
     }
+    public Job(){
+        setJobID("1");
+        setJobType(jobType.HARD);
+        setDuration(1);
+        setDeadline("1");
+        setStartTime("0");
+    }
 
    // public String getJobAttributes() {
    //     return jobAttributes;
