@@ -1,5 +1,11 @@
+(TASKTYPES T1 T2 2 T3
+    2.5 T4 T5-4 T1 1 T_1 5 21T)
 (JOBTYPES
-(J4 T2 15 T1 -2))
+    (J1 T1 1 T2 T3 3)
+    (J2 T2 T3 T4 )
+    (J3 T2)
+    (J2 121 5 11-2))
 (STATIONS
-(S3 2 N Y T3 1)
-(S4 3 Y Y T4 1 T21 2 0.50))
+    (S1 1 N N T1 2 T2 3 0.20)
+    (S2 2 N Y T1 2 T2 4)
+    (S3 2 N Y T3 1)
