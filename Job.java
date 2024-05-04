@@ -4,13 +4,13 @@ public class Job {
     //private String jobAttributes;
 
     private String jobID;
-    private jobType jobType;
+    private String jobType;
     private int duration;
     private String deadline;
     private String startTime;
 
     //constructor without String jobAttributes
-    public Job( String jobID, jobType jobType, int duration, String deadline, String startTime) {
+    public Job( String jobID, String jobType, int duration, String deadline, String startTime) {
 
        // this.jobAttributes = jobAttributes;
         this.jobID = jobID;
@@ -21,7 +21,7 @@ public class Job {
     }
     public Job(){
         setJobID("1");
-        setJobType(jobType.HARD);
+        setJobType("Easy");
         setDuration(1);
         setDeadline("1");
         setStartTime("0");
@@ -43,11 +43,11 @@ public class Job {
         this.jobID = jobID;
     }
 
-    public jobType getJobType() {
+    public String getJobType() {
         return jobType;
     }
 
-    public void setJobType(jobType jobType) {
+    public void setJobType(String jobType) {
         this.jobType = jobType;
     }
 
