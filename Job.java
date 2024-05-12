@@ -10,14 +10,14 @@ public class Job {
     private String startTime;
 
     //constructor without String jobAttributes
-    public Job( String jobID, String jobType, int duration, String deadline, String startTime) {
+    public Job( String jobID, String jobType, int duration, String startTime, String deadline) {
 
        // this.jobAttributes = jobAttributes;
         this.jobID = jobID;
         this.jobType = jobType;
         this.duration = duration;
-        this.deadline = deadline;
         this.startTime = startTime;
+        this.deadline = deadline;
     }
     public Job(){
         setJobID("1");
@@ -76,4 +76,5 @@ public class Job {
     }
 
     //getJobID, getJobType, getStartTime, getDuration, getDeadline + setters of these
+
 }

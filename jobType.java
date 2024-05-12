@@ -1,4 +1,7 @@
  enum jobType {
-    HARD,EASY
-     //just example job types
-}
+     WAITING_TO_START,
+     WAITING_AT_STATION,
+     EXECUTING,
+     COMPLETED,
+     LATE
+ }
