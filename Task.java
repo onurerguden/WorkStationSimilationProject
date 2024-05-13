@@ -5,6 +5,7 @@ public class Task {
     private int taskSize;
     private String stationID;
 
+
     public Task(String stationID, String taskID, int taskSize, String taskType) {
         this.stationID = stationID;
         this.taskID = taskID;
@@ -53,5 +54,6 @@ public class Task {
     public void setTaskType(String taskType) {
         this.taskType = taskType;
     }
+
 
 }

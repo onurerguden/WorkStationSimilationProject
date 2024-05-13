@@ -1,99 +1,109 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
+
+    private static ArrayList<Task> taskTypes = new ArrayList<>();
+    private static ArrayList<Job> jobTypes = new ArrayList<>();
+    private static ArrayList<Station> stations = new ArrayList<>();
+
+
     public static void main(String[] args) {
-        parseWorkflow("sample_workflow.txt");
+
+        takeInputFile();
+        readJobFile();
     }
 
-    public static void parseWorkflow(String fileName) {
-        Set<String> taskTypes = new HashSet<>();
-        Map<String, Integer> jobTypes = new HashMap<>();
-        Set<String> stationTaskTypes = new HashSet<>();
-
-        boolean stationsSection = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+    public static void takeInputFile() {
+        String fileName = "sample_workflow.txt";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
+            System.out.println("--File is accessible--");
             while ((line = reader.readLine()) != null) {
-                // Remove leading and trailing whitespace
-                line = line.trim();
-
-                // Ignore empty lines and comments
-                if (line.isEmpty() || line.startsWith("//")) {
-                    continue;
-                }
-
-                // Check if stations section has started or ended
-                if (line.equals("(STATIONS")) {
-                    stationsSection = true;
-                    continue;
-                } else if (stationsSection && line.equals(")")) {
-                    stationsSection = false;
-                    continue;
-                }
-
-                // Split the line by spaces
-                String[] parts = line.split("\\s+");
-
-                // Check if there are enough parts
-                if (parts.length < 2) {
-                    System.out.println("Syntax error: " + line);
-                    continue;
-                }
-
-                // Check for task types declaration
-                if (parts[0].equals("(TASKTYPES")) {
-                    for (int i = 1; i < parts.length; i++) {
-                        taskTypes.add(parts[i]);
-                    }
-                }
-
-                // Check for job types declaration
-                if (parts[0].equals("(JOBTYPES")) {
-                    for (int i = 1; i < parts.length; i++) {
-                        String jobType = parts[i];
-                        int index = line.indexOf(jobType);
-                        jobTypes.put(jobType, index);
-                    }
-                }
-
-                // Check for station declaration
-                if (stationsSection) {
-                    // Get task types executed by this station
-                    for (int i = 5; i < parts.length; i += 2) {
-                        stationTaskTypes.add(parts[i]);
-                    }
-                }
+                System.out.println(line);
             }
-
-            // Print TASKTYPES
-            System.out.println("TASKTYPES:");
-            for (String taskType : taskTypes) {
-                System.out.println(" - " + taskType);
-            }
-            System.out.println();
-
-            // Print JOBTYPES
-            System.out.println("JOBTYPES:");
-            for (Map.Entry<String, Integer> entry : jobTypes.entrySet()) {
-                System.out.println(" - " + entry.getKey() + " (Line " + entry.getValue() + ")");
-            }
-            System.out.println();
-
-            // Print STATIONS
-            System.out.println("STATIONS:");
-            for (String taskType : stationTaskTypes) {
-                System.out.println(" - " + taskType);
-            }
+            reader.close();
         } catch (IOException e) {
-            System.out.println("Error: Unable to read file " + fileName);
-            e.printStackTrace();
+            if (e instanceof FileNotFoundException) {
+                System.out.println("Error: The file does not exist or is not accessible.");
+            } else {
+                e.printStackTrace();
+            }
         }
     }
+    public static void readJobFile() {
+        String fileName = "sample_jobFile.txt";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+            int lineNumber = 0;
+            HashSet<String> jobIDs = new HashSet<>(); // To check uniqueness of job IDs
+
+            System.out.println("--Job File Contents--");
+
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+
+                String[] tokens = line.split("\\s+");
+
+                if (tokens.length != 4) {
+                    System.out.println("Syntax error at line " + lineNumber + ": " + line);
+                    continue;
+                }
+
+                String jobID = tokens[0];
+                String jobType = tokens[1];
+                String startTime = tokens[2];
+                int duration;
+                try {
+                    duration = Integer.parseInt(tokens[3]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Semantic error at line " + lineNumber + ": Duration must be a valid integer.");
+                    continue;
+                }
+
+                // Check uniqueness of job ID
+                if (!jobIDs.add(jobID)) {
+                    System.out.println("Semantic error at line " + lineNumber + ": Duplicate job ID '" + jobID + "'.");
+                    continue;
+                }
+
+                if (duration < 0) {
+                    System.out.println("Semantic error at line " + lineNumber + ": Duration must be non-negative.");
+                    continue;
+                }
+
+                String deadline = computeDeadline(duration, startTime);
+
+                Job job = new Job(jobID, jobType, duration, startTime, deadline);
+
+                jobTypes.add(job);
+
+                System.out.println("Job ID: " + job.getJobID() + ", Job Type: " + job.getJobType() +
+                        ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
+                        " minutes, Deadline: " + job.getDeadline());
+            }
+            reader.close();
+        } catch (IOException e) {
+            if (e instanceof FileNotFoundException) {
+                System.out.println("Error: The job file does not exist or is not accessible.");
+            } else {
+                e.printStackTrace();
+            }
+        }
+    }
+    public static String computeDeadline(int duration, String startTime) {
+        int start = Integer.parseInt(startTime);
+        int deadline = start + duration;
+        return String.valueOf(deadline);
+    }
+
+
 }
+

@@ -16,17 +16,13 @@ public class Station {
         private int maxCapacity;
         private boolean multiFlag;
         private boolean fifoFlag;
-        private TaskTypes taskType;
+        private String taskType;
         private int stationSpeed;
 
-        public enum TaskTypes {
-            TYPE1,
-            TYPE2,
-            TYPE3
-         }
+
 
         // Consstructor
-        public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, TaskTypes taskType, int stationSpeed) {
+        public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, String taskType, int stationSpeed) {
             this.stationID = stationID;
             this.maxCapacity = maxCapacity;
             this.multiFlag = multiFlag;
@@ -34,12 +30,12 @@ public class Station {
             this.taskType = taskType;
             this.stationSpeed = stationSpeed;
         }
-    public Station() {
+    public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, String taskType, double stationSpeed) {
          this.stationID = "";
         this.maxCapacity = 0;
         this.multiFlag = false;
         this.fifoFlag = false;
-        this.taskType = TaskTypes.TYPE1 ;  //sor bunu nasıl yapılır
+        this.taskType = "";  //sor bunu nasıl yapılır
         this.stationSpeed = 0;
     }
 
@@ -68,8 +64,6 @@ public class Station {
             this.multiFlag = multiFlag;
         }
 
-
-
         public boolean isFifoFlag() {
             return fifoFlag;
         }
@@ -79,20 +73,24 @@ public class Station {
         }
 
 
-        public TaskTypes getTaskType() {
-            return taskType;
-        }
-
-        public void setTaskType(TaskTypes taskType) {
-            this.taskType = taskType;
-        }
-
         public int getStationSpeed() {
             return stationSpeed;
         }
 
         public void setStationSpeed(int stationSpeed) {
             this.stationSpeed = stationSpeed;
+        }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
+    }
+
+    public void setType3(){
+
         }
 
      }
