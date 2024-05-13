@@ -82,9 +82,11 @@ public class Station {
         }
 
     public String getTaskType() {
+
+
         return taskType;
     }
-
+//fix
     public void setTaskType(String taskType) {
         this.taskType = taskType;
     }
