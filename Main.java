@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class Main {
 
+
     private static ArrayList<Task> taskTypes = new ArrayList<>();
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<Station> stations = new ArrayList<>();
