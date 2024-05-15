@@ -1,27 +1,34 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Scanner;
+
 
 public class Main {
+    public static final String stars ="******************";
+    static Scanner sc = new Scanner(System.in);
 
+
+    public static void main(String[] args) {
+       readDocuments();
+    }
 
     private static ArrayList<Task> taskTypes = new ArrayList<>();
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<Station> stations = new ArrayList<>();
 
 
-    public static void main(String[] args) {
-
-        takeInputFile();
+    //Requirement1
+    public static void readDocuments(){
+        readWorkFlow();
         readJobFile();
     }
+    public static void readWorkFlow() {
 
-    public static void takeInputFile() {
-        String fileName = "sample_workflow.txt";
+        System.out.println(stars);
+        System.out.println("Enter workflow file name! -For example :sample_workflow.txt");
+        String workflowName = sc.nextLine();
+        String fileName = workflowName;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
@@ -39,7 +46,9 @@ public class Main {
         }
     }
     public static void readJobFile() {
-        String fileName = "sample_jobFile.txt";
+        System.out.println("Enter job file name! -For example :sample_jobFile.txt");
+        String jobFileName = sc.nextLine();
+        String fileName = jobFileName;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
@@ -53,7 +62,10 @@ public class Main {
 
                 String[] tokens = line.split("\\s+");
 
-                if (tokens.length != 4) {
+                if (tokens.length != 4 ) {
+                    if (reader.readLine()==null){
+                        continue;
+                    }
                     System.out.println("Syntax error at line " + lineNumber + ": " + line);
                     continue;
                 }
@@ -83,13 +95,9 @@ public class Main {
                 String deadline = computeDeadline(duration, startTime);
 
                 Job job = new Job(jobID, jobType, duration, startTime, deadline);
-
                 jobTypes.add(job);
-
-                System.out.println("Job ID: " + job.getJobID() + ", Job Type: " + job.getJobType() +
-                        ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
-                        " minutes, Deadline: " + job.getDeadline());
             }
+            printJobs();
             reader.close();
         } catch (IOException e) {
             if (e instanceof FileNotFoundException) {
@@ -99,12 +107,21 @@ public class Main {
             }
         }
     }
+
+
+    public static void printJobs(){
+        for (Job job :jobTypes){
+            System.out.println("Job ID: " + job.getJobID() + ", Job Type: " + job.getJobType() +
+                    ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
+                    " minutes, Deadline: " + job.getDeadline());
+        }
+    }
+
+
     public static String computeDeadline(int duration, String startTime) {
         int start = Integer.parseInt(startTime);
         int deadline = start + duration;
         return String.valueOf(deadline);
     }
-
-
 }
 
