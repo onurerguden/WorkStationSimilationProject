@@ -20,6 +20,8 @@ public class Main {
     private static ArrayList<TaskType> tasks = new ArrayList<>();
     private static ArrayList<Station> stations=new ArrayList<>();
     private static ArrayList<Event> events =new ArrayList<>();
+    static double eventTime = 0;
+
 
 
     //Requirement1
@@ -61,11 +63,6 @@ public class Main {
             String line;
             int lineNumber = 0;
             HashSet<String> jobIDs = new HashSet<>(); // To check uniqueness of job IDs
-
-
-
-            createObjectsManually();
-
 
 
             while ((line = reader.readLine()) != null) {
@@ -116,6 +113,17 @@ public class Main {
 
 
 
+            double higestDeadline = 0;
+            for (Job job :jobTypes){
+                if (job.getDeadline()>higestDeadline){
+                    higestDeadline= job.getDeadline();
+                    eventTime = higestDeadline;
+                }
+                System.out.println("EVENT TIME : "+ eventTime);
+            }
+
+            createObjectsManually();
+
             reader.close();
         } catch (IOException e) {
             if (e instanceof FileNotFoundException) {
@@ -125,6 +133,7 @@ public class Main {
             }
         }
     }
+
 
     public static void createObjectsManually(){
 
@@ -144,16 +153,17 @@ public class Main {
 
         Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
         stations.add(S1);
-        System.out.println("Enter the event time!");
-        int eventTime = sc.nextInt();
-        Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
+        //System.out.println("Enter the event time!");
+        //int eventTime = sc.nextInt();
 
+        System.out.println("SEXMAKİNESİ31");
+        System.out.println(eventTime);
+        Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
         events.add(event1);
     }
 
 
     public static int computeDeadline(int duration, int startTime) {
-
         int deadline = startTime + duration;
         return deadline;
     }
