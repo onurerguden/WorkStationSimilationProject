@@ -1,4 +1,5 @@
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -15,7 +16,9 @@ public class Main {
 
 
     private static ArrayList<Job> jobTypes = new ArrayList<>();
-    private static ArrayList<Station> stations = new ArrayList<>();
+    private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
+    private static ArrayList<TaskType> tasks = new ArrayList<>();
+    private static ArrayList<Station> stations=new ArrayList<>();
 
 
     //Requirement1
@@ -46,6 +49,9 @@ public class Main {
         }
     }
     public static void readJobFile() {
+
+
+
         System.out.println("Enter job file name! -For example :sample_jobFile.txt");
         String jobFileName = sc.nextLine();
         String fileName = jobFileName;
@@ -57,9 +63,7 @@ public class Main {
 
             System.out.println("--Job File Contents--");
 
-            ArrayList<TaskType> tasks = new ArrayList<>();
-            TaskType T1 = new TaskType("T1",1);
-            tasks.add(T1);
+            createObjectsManually();
 
 
 
@@ -80,6 +84,8 @@ public class Main {
                 String jobTypeIDname = tokens[1];
                 jobTypeID jobTypeID = new jobTypeID(jobTypeIDname,tasks);
                 String startTime = tokens[2];
+
+
                 int duration;
                 try {
                     duration = Integer.parseInt(tokens[3]);
@@ -105,7 +111,10 @@ public class Main {
                 Job job = new Job(jobID,startTime,duration, jobTypeID ,deadline, jobType.WAITING_TO_START);
                 jobTypes.add(job);
             }
+
+            printStations();
             printJobs();
+
             reader.close();
         } catch (IOException e) {
             if (e instanceof FileNotFoundException) {
@@ -117,10 +126,49 @@ public class Main {
     }
     public static void printTasks(){
         for (TaskType TaskType: jobTypeID.getTasks() ){
-            System.out.print(" "+TaskType.getTaskTypeID()+" ");
+            System.out.print(", "+TaskType.getTaskTypeID()+" "+ TaskType.getSize());
         }
     }
 
+
+    public static void createObjectsManually(){
+
+        TaskType T1 = new TaskType("T1",1);
+        TaskType T2 = new TaskType("T2");
+        TaskType T3 = new TaskType("T3",3);
+
+        tasks.add(T1);
+        tasks.add(T2);
+        tasks.add(T3);
+
+        TaskTypeSpeedReeder T1_S = new TaskTypeSpeedReeder("T1",2);
+        TaskTypeSpeedReeder T2_S = new TaskTypeSpeedReeder("T2",3);
+
+        TaskTypeSpeedReeders.add(T1_S);
+        TaskTypeSpeedReeders.add(T2_S);
+
+
+
+        Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
+        stations.add(S1);
+    }
+
+    public static void printStations(){
+        for (Station Station: stations){
+            System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
+                    " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
+            printTaskTypeSpeedReeder();
+            System.out.print(" , Speed : "+ Station.getStationSpeed());
+
+        }
+        System.out.println();
+    }
+
+    public static void printTaskTypeSpeedReeder(){
+        for (TaskTypeSpeedReeder TaskTypeSpeedReeder:TaskTypeSpeedReeders){
+            System.out.print("  "+TaskTypeSpeedReeder.getTaskTypeID()+ "  "+TaskTypeSpeedReeder.getTaskTypeSpeed());
+        }
+    }
 
 
     public static void printJobs(){
@@ -132,7 +180,6 @@ public class Main {
             System.out.println();
         }
     }
-
 
     public static String computeDeadline(int duration, String startTime) {
         int start = Integer.parseInt(startTime);
