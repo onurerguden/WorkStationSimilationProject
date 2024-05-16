@@ -11,7 +11,9 @@ public class Main {
 
 
     public static void main(String[] args) {
-       readDocuments();
+        readDocuments();
+        simulation();
+
     }
 
 
@@ -19,6 +21,7 @@ public class Main {
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private static ArrayList<TaskType> tasks = new ArrayList<>();
     private static ArrayList<Station> stations=new ArrayList<>();
+    private static ArrayList<Event> events =new ArrayList<>();
 
 
     //Requirement1
@@ -61,7 +64,7 @@ public class Main {
             int lineNumber = 0;
             HashSet<String> jobIDs = new HashSet<>(); // To check uniqueness of job IDs
 
-            System.out.println("--Job File Contents--");
+
 
             createObjectsManually();
 
@@ -112,8 +115,7 @@ public class Main {
                 jobTypes.add(job);
             }
 
-            printStations();
-            printJobs();
+
 
             reader.close();
         } catch (IOException e) {
@@ -124,12 +126,6 @@ public class Main {
             }
         }
     }
-    public static void printTasks(){
-        for (TaskType TaskType: jobTypeID.getTasks() ){
-            System.out.print(", "+TaskType.getTaskTypeID()+" "+ TaskType.getSize());
-        }
-    }
-
 
     public static void createObjectsManually(){
 
@@ -147,44 +143,68 @@ public class Main {
         TaskTypeSpeedReeders.add(T1_S);
         TaskTypeSpeedReeders.add(T2_S);
 
-
-
         Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
         stations.add(S1);
+
+        System.out.println("Enter the event time!");
+        double eventTime = sc.nextInt();
+        Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
+
+        events.add(event1);
     }
 
-    public static void printStations(){
-        for (Station Station: stations){
-            System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
-                    " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
-            printTaskTypeSpeedReeder();
-            System.out.print(" , Speed : "+ Station.getStationSpeed());
-
-        }
-        System.out.println();
-    }
-
-    public static void printTaskTypeSpeedReeder(){
-        for (TaskTypeSpeedReeder TaskTypeSpeedReeder:TaskTypeSpeedReeders){
-            System.out.print("  "+TaskTypeSpeedReeder.getTaskTypeID()+ "  "+TaskTypeSpeedReeder.getTaskTypeSpeed());
-        }
-    }
-
-
-    public static void printJobs(){
-        for (Job job :jobTypes){
-            System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
-                    ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
-                    " minutes, Deadline: " + job.getDeadline()+" Job Type: "+ job.getJobType()+" Tasks: ");
-            printTasks();
-            System.out.println();
-        }
-    }
 
     public static String computeDeadline(int duration, String startTime) {
         int start = Integer.parseInt(startTime);
         int deadline = start + duration;
         return String.valueOf(deadline);
+    }
+
+    public static ArrayList<TaskTypeSpeedReeder> getTaskTypeSpeedReeders() {
+        return TaskTypeSpeedReeders;
+    }
+
+    public static void simulation(){
+
+        for (Event event:events){
+            while (event.getTime()>=0){
+                printAllInfo(event);
+                sc.nextLine();
+                event.setTime(event.getTime()-1);
+            }
+            event.setEventType(EventType.TASK_COMPLETE);
+            System.out.println();
+            System.out.println("****************************");
+            System.out.println("-------EVENT COMPLETED-------");
+            System.out.println("****************************");
+            System.out.println();
+            System.out.println();
+            printAllInfo(event);
+        }
+    }
+
+
+    public static void printAllInfo(Event event){
+
+        System.out.println("-------------JOBS------------");
+        event.printJobs();
+
+        System.out.println("----------STATIONS----------");
+        event.printStations();
+
+        if (event.getTime()<0){
+            System.out.println("---------- EVENTS------------");
+            event.printEventInfoFinish();
+        }else {
+            System.out.println("---------- EVENTS------------");
+            event.printEventInfo();
+        }
+
+
+
+        System.out.println("----------------------------");
+        System.out.println();
+        System.out.println();
     }
 }
 

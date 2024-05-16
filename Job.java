@@ -2,8 +2,6 @@ import java.util.ArrayList;
 
 public class Job {
 
-    //private attributes
-    //private String jobAttributes;
 
     private String jobID;
     private jobType jobType;
@@ -24,13 +22,6 @@ public class Job {
         this.startTime = startTime;
     }
 
-    // public String getJobAttributes() {
-   //     return jobAttributes;
-   // }
-
-   // public void setJobAttributes(String jobAttributes) {
-   //     this.jobAttributes = jobAttributes;
-    // }
 
     public String getJobID() {
         return jobID;
