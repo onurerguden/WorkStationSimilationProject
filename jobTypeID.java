@@ -2,9 +2,9 @@ import java.util.ArrayList;
 
 public class jobTypeID {
     private String jobTypeID;
-    private static ArrayList<TaskType> tasks = new ArrayList<>();
+    private static ArrayList<Task> tasks = new ArrayList<>();
 
-    public jobTypeID(String jobTypeID,ArrayList<TaskType> tasks) {
+    public jobTypeID(String jobTypeID,ArrayList<Task> tasks) {
         this.jobTypeID = jobTypeID;
         this.tasks=tasks;
     }
@@ -18,7 +18,7 @@ public class jobTypeID {
         this.jobTypeID = jobTypeID;
     }
 
-    public static ArrayList<TaskType> getTasks() {
+    public static ArrayList<Task> getTasks() {
 
         return tasks;
     }

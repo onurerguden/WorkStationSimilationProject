@@ -73,7 +73,7 @@ public class Station {
 
     }
 
-    public boolean canHandleTask(TaskType task) {
+    public boolean canHandleTask(Task task) {
         // Assume this method checks if the station can handle the given task type
         return true;
     }

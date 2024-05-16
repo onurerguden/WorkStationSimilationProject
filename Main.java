@@ -1,5 +1,4 @@
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -17,7 +16,7 @@ public class Main {
 
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
-    private static ArrayList<TaskType> tasks = new ArrayList<>();
+    private static ArrayList<Task> tasks = new ArrayList<>();
     private static ArrayList<Station> stations=new ArrayList<>();
     private static ArrayList<Event> events =new ArrayList<>();
     static double eventTime = 0;
@@ -119,7 +118,6 @@ public class Main {
                     higestDeadline= job.getDeadline();
                     eventTime = higestDeadline;
                 }
-                System.out.println("EVENT TIME : "+ eventTime);
             }
 
             createObjectsManually();
@@ -137,9 +135,9 @@ public class Main {
 
     public static void createObjectsManually(){
 
-        TaskType T1 = new TaskType("T1",1);
-        TaskType T2 = new TaskType("T2");
-        TaskType T3 = new TaskType("T3",3);
+        Task T1 = new Task("T1",1);
+        Task T2 = new Task("T2");
+        Task T3 = new Task("T3",3);
 
         tasks.add(T1);
         tasks.add(T2);
@@ -153,11 +151,16 @@ public class Main {
 
         Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
         stations.add(S1);
-        //System.out.println("Enter the event time!");
-        //int eventTime = sc.nextInt();
 
-        System.out.println("SEXMAKİNESİ31");
-        System.out.println(eventTime);
+        System.out.println("|-------------------------------|");
+        if (Event.getTimePassed()>eventTime){
+            System.out.println("|------EVENT TIME : DEADLINE PASSED------|");
+        }else {
+            System.out.println("|------EVENT TIME : "+eventTime+"--------|");
+        }
+
+        System.out.println("|-------------------------------|");
+        System.out.println();
         Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
         events.add(event1);
     }
@@ -172,7 +175,7 @@ public class Main {
         return TaskTypeSpeedReeders;
     }
 
-    public static ArrayList<TaskType> getTasks() {
+    public static ArrayList<Task> getTasks() {
         return tasks;
     }
 

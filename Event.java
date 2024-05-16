@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 public class Event {
@@ -13,7 +14,6 @@ public class Event {
         this.time = time;
         this.jobTypes = jobTypes;
         this.stations=stations;
-
     }
 
     public static double getTimePassed() {
@@ -79,14 +79,14 @@ public class Event {
         System.out.println();
     }
     public static void printTasks(){
-        for (TaskType TaskType: jobTypeID.getTasks() ){
-            System.out.print(", "+TaskType.getTaskTypeID()+" "+ TaskType.getSize());
+        for (Task Task : jobTypeID.getTasks() ){
+            System.out.print(", "+ Task.getTaskTypeID()+" "+ Task.getSize());
         }
     }
 
     public static void printAllTasks(){
-        for (TaskType TaskType:Main.getTasks()){
-            System.out.println("TASK TYPE ID : "+TaskType.getTaskTypeID()+ ", TASK SIZE : "+ TaskType.getSize()+", TASK STATE : "+ TaskType.getTaskTypeState());
+        for (Task Task :Main.getTasks()){
+            System.out.println("TASK TYPE ID : "+ Task.getTaskTypeID()+ ", TASK SIZE : "+ Task.getSize()+", TASK STATE : "+ Task.getTaskTypeState());
         }
     }
 
@@ -105,7 +105,15 @@ public class Event {
     }
 
     public static void printTimePassed(){
-        System.out.println("---------TIME PASSED----------");
-        System.out.println("             "+Event.getTimePassed());
+
+
+        if (Event.getTimePassed()>Main.eventTime){
+            System.out.println("-------------------------------");
+            System.out.println("--EVENT TIME: DEADLINE PASSED--");
+        }else {
+            System.out.println("----------TIME PASSED----------");
+            System.out.println("             "+Event.getTimePassed());
+        }
+
     }
 }
