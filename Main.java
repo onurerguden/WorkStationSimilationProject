@@ -13,9 +13,7 @@ public class Main {
     public static void main(String[] args) {
         readDocuments();
         simulation();
-
     }
-
 
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
@@ -86,7 +84,7 @@ public class Main {
                 String jobID = tokens[0];
                 String jobTypeIDname = tokens[1];
                 jobTypeID jobTypeID = new jobTypeID(jobTypeIDname,tasks);
-                String startTime = tokens[2];
+                int startTime = Integer.parseInt(tokens[2]);
 
 
                 int duration;
@@ -107,7 +105,8 @@ public class Main {
                     System.out.println("Semantic error at line " + lineNumber + ": Duration must be non-negative.");
                     continue;
                 }
-                String deadline = computeDeadline(duration, startTime);
+
+                int deadline = computeDeadline(duration,startTime);
 
 
 
@@ -145,31 +144,36 @@ public class Main {
 
         Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
         stations.add(S1);
-
         System.out.println("Enter the event time!");
-        double eventTime = sc.nextInt();
+        int eventTime = sc.nextInt();
         Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
 
         events.add(event1);
     }
 
 
-    public static String computeDeadline(int duration, String startTime) {
-        int start = Integer.parseInt(startTime);
-        int deadline = start + duration;
-        return String.valueOf(deadline);
+    public static int computeDeadline(int duration, int startTime) {
+
+        int deadline = startTime + duration;
+        return deadline;
     }
 
     public static ArrayList<TaskTypeSpeedReeder> getTaskTypeSpeedReeders() {
         return TaskTypeSpeedReeders;
     }
 
+    public static ArrayList<TaskType> getTasks() {
+        return tasks;
+    }
+
     public static void simulation(){
 
         for (Event event:events){
+            event.setTimePassed(0);
             while (event.getTime()>=0){
                 printAllInfo(event);
                 sc.nextLine();
+                event.setTimePassed(event.getTimePassed()+1);
                 event.setTime(event.getTime()-1);
             }
             event.setEventType(EventType.TASK_COMPLETE);
@@ -185,7 +189,9 @@ public class Main {
 
 
     public static void printAllInfo(Event event){
-
+        Event.printTimePassed();
+        System.out.println("-------------TASKS------------");
+        event.printAllTasks();
         System.out.println("-------------JOBS------------");
         event.printJobs();
 
@@ -199,8 +205,6 @@ public class Main {
             System.out.println("---------- EVENTS------------");
             event.printEventInfo();
         }
-
-
 
         System.out.println("----------------------------");
         System.out.println();

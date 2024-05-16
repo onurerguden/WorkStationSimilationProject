@@ -15,4 +15,6 @@ public abstract class Task {
     public void setTaskType(TaskType taskType) {
         this.taskType = taskType;
     }
+
+
 }

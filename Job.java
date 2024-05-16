@@ -5,15 +5,15 @@ public class Job {
 
     private String jobID;
     private jobType jobType;
-    private int duration;
-    private String deadline;
-    private String startTime;
+    private double duration;
+    private int deadline;
+    private int startTime;
     private jobTypeID jobTypeID;
 
 
 
 
-    public Job(String jobID,String startTime, int duration, jobTypeID jobTypeID ,String deadline, jobType jobType) {
+    public Job(String jobID,int startTime, double duration, jobTypeID jobTypeID ,int deadline, jobType jobType) {
         this.deadline = deadline;
         this.duration = duration;
         this.jobID = jobID;
@@ -41,7 +41,7 @@ public class Job {
 
 
 
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
@@ -49,19 +49,19 @@ public class Job {
         this.duration = duration;
     }
 
-    public String getDeadline() {
+    public int getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String deadline) {
+    public void setDeadline(int deadline) {
         this.deadline = deadline;
     }
 
-    public String getStartTime() {
+    public int getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(int startTime) {
         this.startTime = startTime;
     }
 

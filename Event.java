@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 
 public class Event {
-    private double time;
+    private static double timePassed;
+    private static double time;
     private EventType eventType;
     private static ArrayList<Job> jobTypes = new ArrayList<Job>();
     private static ArrayList<Station> stations =new ArrayList<>();
@@ -13,6 +14,14 @@ public class Event {
         this.jobTypes = jobTypes;
         this.stations=stations;
 
+    }
+
+    public static double getTimePassed() {
+        return timePassed;
+    }
+
+    public static void setTimePassed(double timePassed) {
+        Event.timePassed = timePassed;
     }
 
     public  EventType getEventType() {
@@ -39,7 +48,7 @@ public class Event {
         Event.stations = stations;
     }
 
-    public double getTime() {
+    public static double getTime() {
         return time;
     }
 
@@ -50,12 +59,14 @@ public class Event {
     public static void printJobs(){
         for (Job job :jobTypes){
             System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
-                    ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
+                    ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-Event.getTimePassed()) +
                     " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType()+" Tasks: ");
             printTasks();
             System.out.println();
         }
     }
+
+
 
     public static void printStations(){
         for (Station Station: stations){
@@ -73,9 +84,15 @@ public class Event {
         }
     }
 
+    public static void printAllTasks(){
+        for (TaskType TaskType:Main.getTasks()){
+            System.out.println("TASK TYPE ID : "+TaskType.getTaskTypeID()+ ", TASK SIZE : "+ TaskType.getSize()+", TASK STATE : "+ TaskType.getTaskTypeState());
+        }
+    }
+
     public static void printTaskTypeSpeedReeder(){
         for (TaskTypeSpeedReeder TaskTypeSpeedReeder:Main.getTaskTypeSpeedReeders()){
-            System.out.print("  "+TaskTypeSpeedReeder.getTaskTypeID()+ "  "+TaskTypeSpeedReeder.getTaskTypeSpeed());
+            System.out.print(" , "+TaskTypeSpeedReeder.getTaskTypeID()+ "  "+TaskTypeSpeedReeder.getTaskTypeSpeed());
         }
     }
 
@@ -85,5 +102,10 @@ public class Event {
 
     public void printEventInfoFinish(){
         System.out.println("EVENT TYPE : "+ getEventType() + " , DURATION : DEADLINE PASSED");
+    }
+
+    public static void printTimePassed(){
+        System.out.println("---------TIME PASSED----------");
+        System.out.println("             "+Event.getTimePassed());
     }
 }
