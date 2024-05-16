@@ -13,7 +13,7 @@ public class Main {
        readDocuments();
     }
 
-    private static ArrayList<Task> taskTypes = new ArrayList<>();
+
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<Station> stations = new ArrayList<>();
 
@@ -57,6 +57,12 @@ public class Main {
 
             System.out.println("--Job File Contents--");
 
+            ArrayList<TaskType> tasks = new ArrayList<>();
+            TaskType T1 = new TaskType("T1",1);
+            tasks.add(T1);
+
+
+
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
 
@@ -71,7 +77,8 @@ public class Main {
                 }
 
                 String jobID = tokens[0];
-                String jobType = tokens[1];
+                String jobTypeIDname = tokens[1];
+                jobTypeID jobTypeID = new jobTypeID(jobTypeIDname,tasks);
                 String startTime = tokens[2];
                 int duration;
                 try {
@@ -91,10 +98,11 @@ public class Main {
                     System.out.println("Semantic error at line " + lineNumber + ": Duration must be non-negative.");
                     continue;
                 }
-
                 String deadline = computeDeadline(duration, startTime);
 
-                Job job = new Job(jobID, jobType, duration, startTime, deadline);
+
+
+                Job job = new Job(jobID,startTime,duration, jobTypeID ,deadline, jobType.WAITING_TO_START);
                 jobTypes.add(job);
             }
             printJobs();
@@ -107,13 +115,21 @@ public class Main {
             }
         }
     }
+    public static void printTasks(){
+        for (TaskType TaskType: jobTypeID.getTasks() ){
+            System.out.print(" "+TaskType.getTaskTypeID()+" ");
+        }
+    }
+
 
 
     public static void printJobs(){
         for (Job job :jobTypes){
-            System.out.println("Job ID: " + job.getJobID() + ", Job Type: " + job.getJobType() +
+            System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
                     ", Start Time: " + job.getStartTime() + ", Duration: " + job.getDuration() +
-                    " minutes, Deadline: " + job.getDeadline());
+                    " minutes, Deadline: " + job.getDeadline()+" Job Type: "+ job.getJobType()+" Tasks: ");
+            printTasks();
+            System.out.println();
         }
     }
 

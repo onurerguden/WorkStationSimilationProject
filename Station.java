@@ -16,7 +16,7 @@ public class Station {
         private int maxCapacity;
         private boolean multiFlag;
         private boolean fifoFlag;
-        private String taskType;
+
         private int stationSpeed;
 
 
@@ -27,7 +27,7 @@ public class Station {
             this.maxCapacity = maxCapacity;
             this.multiFlag = multiFlag;
             this.fifoFlag = fifoFlag;
-            this.taskType = taskType;
+
             this.stationSpeed = stationSpeed;
         }
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, String taskType, double stationSpeed) {
@@ -35,7 +35,7 @@ public class Station {
         this.maxCapacity = 0;
         this.multiFlag = false;
         this.fifoFlag = false;
-        this.taskType = "";  //sor bunu nasıl yapılır
+
         this.stationSpeed = 0;
     }
 
@@ -80,21 +80,11 @@ public class Station {
         public void setStationSpeed(int stationSpeed) {
             this.stationSpeed = stationSpeed;
         }
+}
 
-    public String getTaskType() {
 
-
-        return taskType;
-    }
 //fix
-    public void setTaskType(String taskType) {
-        this.taskType = taskType;
-    }
 
-    public void setType3(){
 
-        }
-
-     }
 
 

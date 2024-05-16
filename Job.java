@@ -1,33 +1,30 @@
+import java.util.ArrayList;
+
 public class Job {
 
     //private attributes
     //private String jobAttributes;
 
     private String jobID;
-    private String jobType;
+    private jobType jobType;
     private int duration;
     private String deadline;
     private String startTime;
+    private jobTypeID jobTypeID;
 
-    //constructor without String jobAttributes
-    public Job( String jobID, String jobType, int duration, String startTime, String deadline) {
 
-       // this.jobAttributes = jobAttributes;
+
+
+    public Job(String jobID,String startTime, int duration, jobTypeID jobTypeID ,String deadline, jobType jobType) {
+        this.deadline = deadline;
+        this.duration = duration;
         this.jobID = jobID;
         this.jobType = jobType;
-        this.duration = duration;
+        this.jobTypeID = jobTypeID;
         this.startTime = startTime;
-        this.deadline = deadline;
-    }
-    public Job(){
-        setJobID("1");
-        setJobType("Easy");
-        setDuration(1);
-        setDeadline("1");
-        setStartTime("0");
     }
 
-   // public String getJobAttributes() {
+    // public String getJobAttributes() {
    //     return jobAttributes;
    // }
 
@@ -43,13 +40,15 @@ public class Job {
         this.jobID = jobID;
     }
 
-    public String getJobType() {
+    public jobType getJobType() {
         return jobType;
     }
 
-    public void setJobType(String jobType) {
+    public void setJobType(jobType jobType) {
         this.jobType = jobType;
     }
+
+
 
     public int getDuration() {
         return duration;
@@ -77,4 +76,12 @@ public class Job {
 
     //getJobID, getJobType, getStartTime, getDuration, getDeadline + setters of these
 
+
+    public jobTypeID getJobTypeID() {
+        return jobTypeID;
+    }
+
+    public void setJobTypeID(jobTypeID jobTypeID) {
+        this.jobTypeID = jobTypeID;
+    }
 }
