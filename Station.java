@@ -7,14 +7,16 @@ public class Station {
     private boolean fifoFlag;
     private double stationSpeed;
     private ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
+    private static ArrayList<Task> tasksForStations = new ArrayList<>();
 
-    public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder>TaskTypeSpeedReeders,double stationSpeed) {
+    public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder>TaskTypeSpeedReeders, double stationSpeed) {
         this.stationID = stationID;
         this.maxCapacity = maxCapacity;
         this.multiFlag = multiFlag;
         this.fifoFlag = fifoFlag;
         this.TaskTypeSpeedReeders =TaskTypeSpeedReeders;
         this.stationSpeed = stationSpeed;
+        this.tasksForStations = null;
     }
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders) {
@@ -24,9 +26,37 @@ public class Station {
         this.fifoFlag = fifoFlag;
         this.TaskTypeSpeedReeders=TaskTypeSpeedReeders;
         this.stationSpeed = 1.0;
+        this.tasksForStations = null;
     }
 
 
+
+    public static ArrayList<Task> getTasksForStations() {
+        return tasksForStations;
+    }
+
+    public static void printStringTasksForStations(Station station){
+        for (Task task : tasksForStations){
+            System.out.print(task.getTaskTypeID()+" , ");
+        }
+    }
+
+
+    public static void setTasksForStations(ArrayList<Task> tasksForStations) {
+        Station.tasksForStations = tasksForStations;
+    }
+
+    public void setStationSpeed(double stationSpeed) {
+        this.stationSpeed = stationSpeed;
+    }
+
+    public ArrayList<TaskTypeSpeedReeder> getTaskTypeSpeedReeders() {
+        return TaskTypeSpeedReeders;
+    }
+
+    public void setTaskTypeSpeedReeders(ArrayList<TaskTypeSpeedReeder> taskTypeSpeedReeders) {
+        TaskTypeSpeedReeders = taskTypeSpeedReeders;
+    }
 
     public String getStationID() {
         return stationID;
@@ -82,4 +112,6 @@ public class Station {
         // Assume this method calculates station utilization
         return 0;
     }
+
+
 }

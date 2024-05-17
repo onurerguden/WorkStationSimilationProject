@@ -5,14 +5,15 @@ import java.util.Scanner;
 
 
 public class Main {
+    public static void main(String[] args) {
+        readDocuments();
+        createObjectsManually();
+        simulation();
+
+    }
     public static final String stars ="******************";
     static Scanner sc = new Scanner(System.in);
 
-
-    public static void main(String[] args) {
-        readDocuments();
-        simulation();
-    }
 
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
@@ -22,12 +23,13 @@ public class Main {
     static double eventTime = 0;
 
 
-
     //Requirement1
     public static void readDocuments(){
         readWorkFlow();
         readJobFile();
     }
+
+
     public static void readWorkFlow() {
 
         System.out.println(stars);
@@ -51,8 +53,6 @@ public class Main {
         }
     }
     public static void readJobFile() {
-
-
 
         System.out.println("Enter job file name! -For example :sample_jobFile.txt");
         String jobFileName = sc.nextLine();
@@ -111,7 +111,6 @@ public class Main {
             }
 
 
-
             double higestDeadline = 0;
             for (Job job :jobTypes){
                 if (job.getDeadline()>higestDeadline){
@@ -119,8 +118,6 @@ public class Main {
                     eventTime = higestDeadline;
                 }
             }
-
-            createObjectsManually();
 
             reader.close();
         } catch (IOException e) {
@@ -136,12 +133,23 @@ public class Main {
     public static void createObjectsManually(){
 
         Task T1 = new Task("T1",1);
-        Task T2 = new Task("T2");
-        Task T3 = new Task("T3",3);
+        Task T2 = new Task("T2",2);
+        Task T3 = new Task("T3",2.5);
+        Task T4 = new Task("T4");
+        Task T5 = new Task("T3",4);
+        Task T_1 = new Task("T_1",5);
+        Task T21 = new Task("T21");
 
         tasks.add(T1);
         tasks.add(T2);
         tasks.add(T3);
+        tasks.add(T4);
+        tasks.add(T5);
+        tasks.add(T_1);
+        tasks.add(T21);
+
+        //Sort Task algorithm
+        sortTasks(tasks);
 
         TaskTypeSpeedReeder T1_S = new TaskTypeSpeedReeder("T1",2);
         TaskTypeSpeedReeder T2_S = new TaskTypeSpeedReeder("T2",3);
@@ -149,8 +157,17 @@ public class Main {
         TaskTypeSpeedReeders.add(T1_S);
         TaskTypeSpeedReeders.add(T2_S);
 
-        Station S1 = new Station("S1",1,false,false,TaskTypeSpeedReeders,0.20);
+        Station S1 = new Station("S1",1,false,false,getTaskTypeSpeedReeders(),0.2);
+        Station S2 = new Station("S2",2,true,true,getTaskTypeSpeedReeders());
+        Station S3 = new Station("S3",2,false,true,getTaskTypeSpeedReeders());
+        Station S4 = new Station("S4",3,true,true,getTaskTypeSpeedReeders(),0.5);
+
         stations.add(S1);
+        stations.add(S2);
+        stations.add(S3);
+        stations.add(S4);
+
+
 
         System.out.println("|-------------------------------|");
         if (Event.getTimePassed()>eventTime){
@@ -166,6 +183,17 @@ public class Main {
     }
 
 
+    public static void supplyTasksForStations(){
+        for (Station station : stations){
+            if (Event.getTimePassed() == 1){
+                station.setTasksForStations(tasks);
+            }
+        }
+    }
+
+
+
+
     public static int computeDeadline(int duration, int startTime) {
         int deadline = startTime + duration;
         return deadline;
@@ -179,11 +207,16 @@ public class Main {
         return tasks;
     }
 
-    public static void simulation(){
 
+
+
+    public static void simulation(){
         for (Event event:events){
             event.setTimePassed(0);
             while (event.getTime()>=0){
+                if (event.getTimePassed()==1){
+                    supplyTasksForStations();
+                }
                 printAllInfo(event);
                 sc.nextLine();
                 event.setTimePassed(event.getTimePassed()+1);
@@ -201,6 +234,20 @@ public class Main {
     }
 
 
+        public static void sortTasks(ArrayList<Task> tasks) {
+            for (int i = 1; i < tasks.size(); i++) {
+                Task key = tasks.get(i);
+                int j = i - 1;
+
+                while (j >= 0 && tasks.get(j).getSize() > key.getSize()) {
+                    tasks.set(j + 1, tasks.get(j));
+                    j = j - 1;
+                }
+                tasks.set(j + 1, key);
+            }
+        }
+
+
     public static void printAllInfo(Event event){
         Event.printTimePassed();
         System.out.println("-------------TASKS------------");
@@ -210,6 +257,7 @@ public class Main {
 
         System.out.println("----------STATIONS----------");
         event.printStations();
+        Event.printStationHandlingSituation();
 
         if (event.getTime()<0){
             System.out.println("---------- EVENTS------------");
@@ -218,6 +266,7 @@ public class Main {
             System.out.println("---------- EVENTS------------");
             event.printEventInfo();
         }
+
 
         System.out.println("----------------------------");
         System.out.println();

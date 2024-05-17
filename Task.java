@@ -7,7 +7,7 @@ public class Task {
     public Task(String taskTypeID, double size) {
         this.size = size;
         this.taskID = taskTypeID;
-        TaskTypeState= TaskTypeState.TASK_TYPE_STATE_START;
+        TaskTypeState= TaskTypeState.START;
     }
 
 
@@ -18,7 +18,7 @@ public class Task {
     public Task(String taskTypeID) {
         this.size = 1;
         this.taskID = taskTypeID;
-        TaskTypeState= TaskTypeState.TASK_TYPE_STATE_START;
+        TaskTypeState= TaskTypeState.START;
     }
 
     public double getSize() {

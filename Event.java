@@ -73,7 +73,7 @@ public class Event {
             System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
                     " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
             printTaskTypeSpeedReeder();
-            System.out.print(" , Speed : "+ Station.getStationSpeed());
+            System.out.println(" , Speed : "+ Station.getStationSpeed());
 
         }
         System.out.println();
@@ -116,4 +116,24 @@ public class Event {
         }
 
     }
+
+    public static void printStationHandlingSituation(){
+        for (Station station : stations){
+            for (int i = 0;i<station.getMaxCapacity();i++){
+                System.out.print("STATION ID : "+station.getStationID());
+                if (station.getTasksForStations() == null ){
+                    System.out.println(" , HANDLING TASK : EMPTY STATION");
+                }
+                else {
+                    System.out.print(" , HANDLING TASK : " );
+                    Station.printStringTasksForStations(station);
+                    System.out.println();
+                }
+            }
+            System.out.println();
+        }
+    }
+
+
+
 }
