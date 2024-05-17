@@ -7,7 +7,7 @@ public class Station {
     private boolean fifoFlag;
     private double stationSpeed;
     private ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
-    private static ArrayList<Task> tasksForStations = new ArrayList<>();
+    private  ArrayList<Task> tasksForStations = new ArrayList<>();
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder>TaskTypeSpeedReeders, double stationSpeed) {
         this.stationID = stationID;
@@ -31,19 +31,19 @@ public class Station {
 
 
 
-    public static ArrayList<Task> getTasksForStations() {
+    public  ArrayList<Task> getTasksForStations() {
         return tasksForStations;
     }
 
-    public static void printStringTasksForStations(Station station){
+    public  void printStringTasksForStations(Station station){
         for (Task task : tasksForStations){
             System.out.print(task.getTaskTypeID()+" , ");
         }
     }
 
 
-    public static void setTasksForStations(ArrayList<Task> tasksForStations) {
-        Station.tasksForStations = tasksForStations;
+    public  void setTasksForStations(ArrayList<Task> tasksForStations) {
+        this.tasksForStations = tasksForStations;
     }
 
     public void setStationSpeed(double stationSpeed) {

@@ -1,4 +1,4 @@
 public enum EventType {
-    JOB_START,
+    EVENT_START,
     TASK_COMPLETE
 }

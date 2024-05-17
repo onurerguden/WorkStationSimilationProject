@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) {
         readDocuments();
         createObjectsManually();
+        createEventsManually();
         simulation();
 
     }
@@ -20,8 +21,16 @@ public class Main {
     private static ArrayList<Task> tasks = new ArrayList<>();
     private static ArrayList<Station> stations=new ArrayList<>();
     private static ArrayList<Event> events =new ArrayList<>();
+    private static ArrayList<Event> eventQueue = new ArrayList<>();
     static double eventTime = 0;
 
+
+    public static void createEventsManually() {
+       for (int i = 0; i<=45;i=i+5){
+               Event event = new Event(i,EventType.EVENT_START);
+               eventQueue.add(event);
+       }
+    }
 
     //Requirement1
     public static void readDocuments(){
@@ -31,7 +40,6 @@ public class Main {
 
 
     public static void readWorkFlow() {
-
         System.out.println(stars);
         System.out.println("Enter workflow file name! -For example :sample_workflow.txt");
         String workflowName = sc.nextLine();
@@ -168,7 +176,6 @@ public class Main {
         stations.add(S4);
 
 
-
         System.out.println("|-------------------------------|");
         if (Event.getTimePassed()>eventTime){
             System.out.println("|------EVENT TIME : DEADLINE PASSED------|");
@@ -178,7 +185,7 @@ public class Main {
 
         System.out.println("|-------------------------------|");
         System.out.println();
-        Event event1 = new Event(EventType.JOB_START,eventTime,jobTypes,stations);
+        Event event1 = new Event(EventType.EVENT_START,eventTime,jobTypes,stations);
         events.add(event1);
     }
 
@@ -206,22 +213,35 @@ public class Main {
     public static ArrayList<Task> getTasks() {
         return tasks;
     }
+    
 
-
-
-
-    public static void simulation(){
-        for (Event event:events){
+    public static void simulation() {
+        int i = 1;
+        for (Event event : events) {
             event.setTimePassed(0);
-            while (event.getTime()>=0){
-                if (event.getTimePassed()==1){
+            while (event.getTimeRemaining() >= 0) {
+                if (event.getTimePassed() == 1) {
                     supplyTasksForStations();
                 }
-                printAllInfo(event);
-                sc.nextLine();
-                event.setTimePassed(event.getTimePassed()+1);
-                event.setTime(event.getTime()-1);
+
+                while (i < eventQueue.size() && event.getTimePassed() <= eventQueue.get(i).getEventTimes()) {
+                    event.setTimePassed(eventQueue.get(i).getEventTimes());
+                    event.setTimeRemaining(eventTime-Event.getTimePassed());
+                    printAllInfo(event);
+                    if (event.getTimePassed() == eventQueue.get(i).getEventTimes()){
+                        sc.nextLine();
+                    }
+
+                    if (i > eventQueue.size() ) {
+                        break;
+                    }
+                    i++;
+                }
+                if (i >= eventQueue.size() ) {
+                    break;
+                }
             }
+            event.setTimePassed(event.getTimePassed() + 1);
             event.setEventType(EventType.TASK_COMPLETE);
             System.out.println();
             System.out.println("****************************");
@@ -234,7 +254,9 @@ public class Main {
     }
 
 
-        public static void sortTasks(ArrayList<Task> tasks) {
+
+
+    public static void sortTasks(ArrayList<Task> tasks) {
             for (int i = 1; i < tasks.size(); i++) {
                 Task key = tasks.get(i);
                 int j = i - 1;
@@ -249,7 +271,7 @@ public class Main {
 
 
     public static void printAllInfo(Event event){
-        Event.printTimePassed();
+        event.printTimePassed();
         System.out.println("-------------TASKS------------");
         event.printAllTasks();
         System.out.println("-------------JOBS------------");
@@ -257,9 +279,9 @@ public class Main {
 
         System.out.println("----------STATIONS----------");
         event.printStations();
-        Event.printStationHandlingSituation();
+        event.printStationHandlingSituation();
 
-        if (event.getTime()<0){
+        if (event.getTimeRemaining()<0){
             System.out.println("---------- EVENTS------------");
             event.printEventInfoFinish();
         }else {
