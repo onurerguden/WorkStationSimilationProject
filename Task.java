@@ -9,17 +9,17 @@ public class Task {
         this.taskID = taskTypeID;
         TaskTypeState= TaskTypeState.START;
     }
-
+    public Task(String taskTypeID) {
+        this.size = 0;
+        this.taskID = taskTypeID;
+        TaskTypeState= TaskTypeState.START;
+    }
 
     public TaskTypeState getTaskTypeState() {
         return TaskTypeState;
     }
 
-    public Task(String taskTypeID) {
-        this.size = 1;
-        this.taskID = taskTypeID;
-        TaskTypeState= TaskTypeState.START;
-    }
+
 
     public double getSize() {
         return size;
