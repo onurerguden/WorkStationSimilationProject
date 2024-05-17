@@ -12,10 +12,32 @@ public class Main {
         simulation();
 
     }
+
+    
+
+    public void Req2(){
+
+    }
+
+    public void giveStationsListsForStations(){
+
+    }
+
+    public void checkChanges(){
+
+    }
+
+    public void createEvent(){
+
+    }
+
+    public void printReport(){
+
+    }
+
+
     public static final String stars ="******************";
     static Scanner sc = new Scanner(System.in);
-
-
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private static ArrayList<Task> tasks = new ArrayList<>();
@@ -213,7 +235,8 @@ public class Main {
     public static ArrayList<Task> getTasks() {
         return tasks;
     }
-    
+
+
 
     public static void simulation() {
         int i = 1;
@@ -268,6 +291,7 @@ public class Main {
                 tasks.set(j + 1, key);
             }
         }
+
 
 
     public static void printAllInfo(Event event){
