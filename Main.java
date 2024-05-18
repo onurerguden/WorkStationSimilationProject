@@ -10,7 +10,6 @@ public class Main {
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private static ArrayList<Task> tasks = new ArrayList<>();
-    private static ArrayList<Task> tasksToExecute = new ArrayList<>();
     private static ArrayList<Station> stations=new ArrayList<>();
     private static ArrayList<Event> events =new ArrayList<>();
     private static ArrayList<Event> eventQueue = new ArrayList<>();
@@ -37,24 +36,57 @@ public class Main {
 
     }
 
-    public static void giveStationsListsForStations(){
-        for (Task task:tasks){
-            for (Station station :stations){
-                ArrayList<Task> tasksForStations = new ArrayList<>();
-                for (TaskTypeSpeedReeder taskTypeSpeedReeder : station.getTaskTypeSpeedReeders()){
-                    if(taskTypeSpeedReeder.getTaskTypeID() == task.getTaskTypeID() ){
+    public static void giveStationsListsForStations() {
+        
+        for (Station station : stations) {
+            station.setTasksForStations(new ArrayList<>()); // Ensure each station has an empty task list
+        }
 
-                        tasksForStations.add(task);
-                        station.setTasksForStations(tasksForStations);
+        int stationIndex = 0;
 
+        while (!tasks.isEmpty()) {
+            Task currentTask = tasks.getFirst();
+            boolean taskAssigned = false;
+
+            for (int i = 0; i < stations.size(); i++) {
+                Station station = stations.get(stationIndex);
+                stationIndex = (stationIndex + 1) % stations.size(); // Move to the next station
+
+                for (TaskTypeSpeedReeder taskTypeSpeedReeder : station.getTaskTypeSpeedReeders()) {
+                    if (taskTypeSpeedReeder.getTaskTypeID().equals(currentTask.getTaskTypeID())) {
+                        System.out.println("Assigning Task Type ID: " + currentTask.getTaskTypeID() + " to Station ID: " + station.getStationID());
+
+                        // Add the task to the station's task list
+                        station.getTasksForStations().add(currentTask);
+
+                        // Remove the task from the global task list
+                        tasks.removeFirst();
+
+                        taskAssigned = true;
+                        break;
                     }
                 }
+                if (taskAssigned) {
+                    break;
+                }
+            }
+
+            // If no station could handle the task, log it and break to avoid infinite loop
+            if (!taskAssigned) {
+                System.out.println("No station can handle the task with Task Type ID: " + currentTask.getTaskTypeID());
+                break;
             }
         }
+
+        // Print the final assignment for debugging
+        for (Station station : stations) {
+            System.out.println("Station ID: " + station.getStationID() + " has the following tasks assigned:");
+            for (Task task : station.getTasksForStations()) {
+                System.out.println(" - Task Type ID: " + task.getTaskTypeID());
+            }
+        }
+
     }
-
-
-
 
 
     public void checkChanges(){
@@ -170,7 +202,7 @@ public class Main {
 
 
                 Job job = new Job(jobID,startTime,duration, jobTypeID ,deadline, jobType.WAITING_TO_START);
-                jobTypes.add(job);
+               jobTypes.add(job);
             }
 
 
@@ -193,22 +225,31 @@ public class Main {
     }
 
 
+
     public static void createObjectsManually(){
         Task T1 = new Task("T1",1);
         Task T2 = new Task("T2",2);
         Task T3 = new Task("T3",2.5);
-        Task T4 = new Task("T4");
+        Task T4 = new Task("T4",1);
         Task T5 = new Task("T3",4);
         Task T_1 = new Task("T_1",5);
-        Task T21 = new Task("T21");
+        Task T21 = new Task("T21",1);
+
 
         tasks.add(T1);
         tasks.add(T2);
         tasks.add(T3);
+
+        tasks.add(T2);
+        tasks.add(T3);
         tasks.add(T4);
-        tasks.add(T5);
-        tasks.add(T_1);
+
+        tasks.add(T2);
+        //tasks.add(T4);
+        //tasks.add(T5);
+        //tasks.add(T_1);
         tasks.add(T21);
+        tasks.add(T1);
 
         //Sort Task algorithm
         sortTasks(tasks);

@@ -145,7 +145,7 @@ public class Event {
 
     public  void printStationHandlingSituation(){
         for (Station station : stations){
-            for (int i = 0;i<station.getMaxCapacity();i++){
+
                 System.out.print("STATION ID : "+station.getStationID());
                 if (station.getTasksForStations() == null ){
                     System.out.println(" , HANDLING TASK : EMPTY STATION");
@@ -155,7 +155,7 @@ public class Event {
                     station.printStringTasksForStations(station);
                     System.out.println();
                 }
-            }
+
             System.out.println();
         }
     }
