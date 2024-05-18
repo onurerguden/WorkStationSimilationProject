@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Main {
@@ -15,6 +13,8 @@ public class Main {
     private static ArrayList<Event> eventQueue = new ArrayList<>();
     private static ArrayList<jobTypeID> jobTypeIDS = new ArrayList<>();
     static double eventTime = 0;
+    private static Map<String, Map<String, String>> jobParsedTaskTypesWithSize = new HashMap<>();
+
 
 
     public static ArrayList<Station> getStations() {
@@ -233,6 +233,8 @@ public class Main {
     //Requirement1
     public static void readDocuments(){
         readWorkFlow();
+        readWorkflowFile();
+        //readStationFile();
         readJobFile();
     }
 
@@ -257,6 +259,178 @@ public class Main {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void readWorkflowFile() {
+        System.out.println("Enter file name for the workflow! - For example: sample_workflow.txt");
+        String fileName = sc.nextLine();
+        try {
+            File file = new File(fileName);
+            Scanner fileScanner = new Scanner(file);
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine().trim();
+                if (line.startsWith("(TASKTYPES")) {
+                    //parseTaskTypes(line, new Scanner(file));
+                } else if (line.startsWith("(JOBTYPES")) {
+                    parseJobTypes(new Scanner(file));
+                } else if (line.startsWith("(STATIONS")) {
+                    parseStations(new Scanner(file));
+                }
+            }
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: The file does not exist or is not accessible.");
+        }
+    }
+    public static void parseJobTypes(Scanner scanner) {
+        int lineNumber=1;
+
+        boolean jobTypesStarted = false;
+
+        while (scanner.hasNextLine()) {
+            lineNumber++;
+            String line = scanner.nextLine().trim();
+            System.out.println("Read line: " + line);
+
+            if (line.startsWith("(STATIONS")) {
+                break;
+            }
+
+            if (line.endsWith("(JOBTYPES")) {
+                jobTypesStarted = true;
+                continue;
+            }
+
+            if (jobTypesStarted) {
+                if (line.startsWith("(")) {
+                    String jobTypeLine = line.replace("(", "").trim();
+                    if (!jobTypeLine.isEmpty()) {
+                        String[] parts = jobTypeLine.split("\\s+");
+                        if (parts.length > 0) {
+                            String jobType = parts[0];
+                            Map<String, String> taskTypesWithSize = new HashMap<>();
+                            String currentTaskType = null; // Reset current task type for each job type
+
+                            for (int i = 1; i < parts.length; i++) {
+                                String part = parts[i];
+                                if (part.isEmpty() || part.equals(")")) {
+                                    continue; // Skip empty parts or closing parenthesis
+                                }
+                                // System.out.println("CHECKING PART: " + part);
+
+                                if (part.endsWith(")")) {
+                                    part = part.substring(0, part.length() - 1);
+                                }
+
+                                if (Character.isDigit(part.charAt(0))) {
+                                    // If part is a digit, it's a size
+                                    if (currentTaskType != null) {
+                                        // Add task size to the map
+                                        taskTypesWithSize.put(currentTaskType, part);
+                                    } else {
+                                        // If no task type is provided, skip this size
+                                        System.out.println("No task type found for size: " + part);
+                                        // Alert for null task type
+                                        System.out.println("ALERT: Task type is null for job type: " + jobType);
+                                    }
+                                } else {
+                                    currentTaskType = part;
+                                    taskTypesWithSize.put(currentTaskType, "null");
+                                }
+                            }
+                            // Store the job type with its task types and sizes
+                            if (jobParsedTaskTypesWithSize.containsKey(jobType)) {
+                                // If the job type already exists, merge the task types and sizes
+                                Map<String, String> existingTaskTypesWithSize = jobParsedTaskTypesWithSize.get(jobType);
+                                existingTaskTypesWithSize.putAll(taskTypesWithSize);
+                                jobParsedTaskTypesWithSize.put(jobType, existingTaskTypesWithSize);
+                            } else {
+                                // If the job type is new, simply put it in the map
+                                jobParsedTaskTypesWithSize.put(jobType, taskTypesWithSize);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /*public static void readStationFile() {
+       System.out.println("Enter file name for the stations! -For example: sample_workflow.txt");
+       String stationFileName = sc.nextLine();
+       try {
+           Scanner scanner = new Scanner(new File(stationFileName));
+           stations = parseStations(scanner); // Istasyonları ayrıştırmak için parseStations metodunu çağırıyoruz
+           scanner.close();
+       } catch (FileNotFoundException e) {
+           System.out.println("Error: The station file does not exist or is not accessible.");
+       }
+   }*/
+    public static ArrayList<Station> parseStations(Scanner scanner) {
+        int lineNumber=1;
+
+
+        while (scanner.hasNextLine()) {
+            lineNumber++;
+            String line = scanner.nextLine().trim(); // Read the entire line
+
+            if (line.equals("(STATIONS")) {
+                while (scanner.hasNextLine()) {
+                    line = scanner.nextLine().trim(); // Read the next line
+
+
+                    // If encounter "))", exit the loop
+                    if (line.equals("))")) {
+                        break;
+                    } else if (line.equals(")")) {
+                        System.err.println("Error: Single ')' encountered without station details.");// If encounter single ")", skip to the next line
+                        continue;
+                    }
+                    String[] components = line.split("\\s+");
+
+                    System.out.println("Station details: " + line);
+                    if (components.length < 4) {
+                        System.err.println("Error: Incomplete station details: " + line);
+                        continue;
+                    }
+                    if (!line.startsWith("(") || !line.endsWith(")")) {
+                        System.err.println("Line " + lineNumber + ": Invalid format.");
+                        continue;
+                    }
+
+
+
+                    // Extract station ID, max capacity, multi flag, and FIFO flag
+                    String stationID = components[0].substring(1); // Removing the opening parenthesis
+                    int maxCapacity = Integer.parseInt(components[1]);
+                    boolean multiFlag = components[2].equals("N"); // Assuming 'N' indicates false
+                    boolean fifoFlag = components[3].equals("N"); // Assuming 'N' indicates false
+
+                    // Processing task speeds and plusMinus values
+
+                    for (int i = 4; i < components.length; i += 2) {
+                        String taskTypeID = components[i];
+                        if (i + 1 < components.length && components[i + 1].matches("\\d+(\\.\\d+)?")) {
+                            // If the next element is a valid plusMinus value
+                            double taskTypeSpeed = Double.parseDouble(components[i + 1]);
+                            TaskTypeSpeedReeders.add(new TaskTypeSpeedReeder(taskTypeID, taskTypeSpeed));
+
+                        }
+                    }
+                    for(TaskTypeSpeedReeder a :getTaskTypeSpeedReeders()) {
+                        System.out.println(a.getTaskTypeID());
+                    }
+                    Station station = new Station(stationID, maxCapacity, multiFlag, fifoFlag, TaskTypeSpeedReeders);
+                    stations.add(station);
+
+                    for (Station b : stations) {
+                        System.out.println("Station ID: " + b.getStationID());
+                    }
+
+
+                }
+            }
+        }
+        return stations;
     }
     public static void readJobFile() {
 
