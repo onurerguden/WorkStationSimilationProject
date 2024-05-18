@@ -17,8 +17,46 @@ public class Main {
     static double eventTime = 0;
 
 
-    public static ArrayList<Station> getStations() {
-        return stations;
+    public static void stationsExecuteTasks() {
+        eventTime=0;
+        for (Station station : stations) {
+            ArrayList<Task> stationTasks = station.getTasksForStations();
+            if (stationTasks != null && !stationTasks.isEmpty()) {
+                System.out.println("Station " + station.getStationID() + " starting task execution.");
+
+                for (Task task : stationTasks) {
+                    if (task.getSize()!=0){
+                        double speed = station.getStationSpeed();
+
+                        // If the station has variable speed
+                        if (station.getStationSpeed() != 1.0) {
+                            speed = station.getStationSpeed() * (1 + (Math.random() * 0.4 - 0.2)); // +-20% variability
+                        }
+
+                        double duration = task.getSize() / speed;
+                        System.out.println("Executing Task " + task.getTaskTypeID() + " with size " + task.getSize() + " at speed " + speed + " will take " + duration + " minutes.");
+                        station.getTasksForStations().getFirst().setSize(0); // Mark the task as completed (size 0)
+                        task.setTaskTypeState(TaskTypeState.COMPLETE);
+
+                        // Create event for task completion
+                        createEvent(eventTime + duration, EventType.TASK_COMPLETE);
+                        eventTime += duration;
+                    }
+                }
+
+                System.out.println("Station " + station.getStationID() + " completed all tasks.");
+            } else {
+                System.out.println("Station " + station.getStationID() + " has no tasks to execute.");
+            }
+        }
+        for (Event event:eventQueue){
+            System.out.println(event.getEventTimes());
+        }
+    }
+
+    public static void createEvent(double eventTime, EventType eventType) {
+        Event event = new Event(eventTime, eventType);
+        eventQueue.add(event);
     }
 
 
@@ -185,7 +223,7 @@ public class Main {
     }
 
 
-    public static void createEventsManually() {
+   /* public static void createEventsManually() {
        for (int i = 0; i<=45;i=i+5){
            if (i == 5){
                Event event = new Event(1,EventType.EVENT_START_TO_WAIT);
@@ -194,6 +232,17 @@ public class Main {
                Event event = new Event(i,EventType.EVENT_START_TO_WAIT);
                eventQueue.add(event);
        }
+    }
+
+    */
+    public static void createEventsManually() {
+                Event event = new Event(0,EventType.EVENT_START_TO_WAIT);
+                eventQueue.add(event);
+            Event event2 = new Event(1,EventType.EXECUTING);
+            eventQueue.add(event2);
+        Event event3 = new Event(2,EventType.EXECUTING);
+        eventQueue.add(event3);
+
     }
 
     public static void printEventQueue(){
@@ -516,6 +565,9 @@ public class Main {
                        // stationsExecuteTasks();
                     }
                     printAllInfo(event);
+                    if (event.getTimePassed()==2){
+                        stationsExecuteTasks();
+                    }
 
                 }
                 if (i >= eventQueue.size() ) {
