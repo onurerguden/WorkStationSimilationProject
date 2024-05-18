@@ -5,23 +5,57 @@ import java.util.Scanner;
 
 
 public class Main {
+    public static final String stars ="******************";
+    static Scanner sc = new Scanner(System.in);
+    private static ArrayList<Job> jobTypes = new ArrayList<>();
+    private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
+    private static ArrayList<Task> tasks = new ArrayList<>();
+    private static ArrayList<Task> tasksToExecute = new ArrayList<>();
+    private static ArrayList<Station> stations=new ArrayList<>();
+    private static ArrayList<Event> events =new ArrayList<>();
+    private static ArrayList<Event> eventQueue = new ArrayList<>();
+    static double eventTime = 0;
+
+    public static ArrayList<Station> getStations() {
+        return stations;
+    }
+
+    public static void setStations(ArrayList<Station> stations) {
+        Main.stations = stations;
+    }
+
     public static void main(String[] args) {
         readDocuments();
         createObjectsManually();
         createEventsManually();
+        //printEventQueue();
         simulation();
-
     }
 
-    
 
     public void Req2(){
 
     }
 
-    public void giveStationsListsForStations(){
+    public static void giveStationsListsForStations(){
+        for (Task task:tasks){
+            for (Station station :stations){
+                ArrayList<Task> tasksForStations = new ArrayList<>();
+                for (TaskTypeSpeedReeder taskTypeSpeedReeder : station.getTaskTypeSpeedReeders()){
+                    if(taskTypeSpeedReeder.getTaskTypeID() == task.getTaskTypeID() ){
 
+                        tasksForStations.add(task);
+                        station.setTasksForStations(tasksForStations);
+
+                    }
+                }
+            }
+        }
     }
+
+
+
+
 
     public void checkChanges(){
 
@@ -36,22 +70,21 @@ public class Main {
     }
 
 
-    public static final String stars ="******************";
-    static Scanner sc = new Scanner(System.in);
-    private static ArrayList<Job> jobTypes = new ArrayList<>();
-    private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
-    private static ArrayList<Task> tasks = new ArrayList<>();
-    private static ArrayList<Station> stations=new ArrayList<>();
-    private static ArrayList<Event> events =new ArrayList<>();
-    private static ArrayList<Event> eventQueue = new ArrayList<>();
-    static double eventTime = 0;
-
-
     public static void createEventsManually() {
        for (int i = 0; i<=45;i=i+5){
+           if (i == 5){
+               Event event = new Event(1,EventType.EVENT_START);
+               eventQueue.add(event);
+           }
                Event event = new Event(i,EventType.EVENT_START);
                eventQueue.add(event);
        }
+    }
+
+    public static void printEventQueue(){
+        for (Event event:eventQueue){
+            System.out.println( event.getEventTimes());
+        }
     }
 
     //Requirement1
@@ -109,7 +142,7 @@ public class Main {
 
                 String jobID = tokens[0];
                 String jobTypeIDname = tokens[1];
-                jobTypeID jobTypeID = new jobTypeID(jobTypeIDname,tasks);
+                jobTypeID jobTypeID = new jobTypeID(jobTypeIDname);
                 int startTime = Integer.parseInt(tokens[2]);
 
 
@@ -161,7 +194,6 @@ public class Main {
 
 
     public static void createObjectsManually(){
-
         Task T1 = new Task("T1",1);
         Task T2 = new Task("T2",2);
         Task T3 = new Task("T3",2.5);
@@ -181,16 +213,37 @@ public class Main {
         //Sort Task algorithm
         sortTasks(tasks);
 
-        TaskTypeSpeedReeder T1_S = new TaskTypeSpeedReeder("T1",2);
-        TaskTypeSpeedReeder T2_S = new TaskTypeSpeedReeder("T2",3);
+        TaskTypeSpeedReeder T1_S1 = new TaskTypeSpeedReeder("T1",2);
+        TaskTypeSpeedReeder T2_S2 = new TaskTypeSpeedReeder("T2",3);
+        TaskTypeSpeedReeder T2_S3 = new TaskTypeSpeedReeder("T2",4);
+        TaskTypeSpeedReeder T2_S4 = new TaskTypeSpeedReeder("T3",1);
+        TaskTypeSpeedReeder T2_S5 = new TaskTypeSpeedReeder("T4",1);
+        TaskTypeSpeedReeder T2_S6 = new TaskTypeSpeedReeder("T21",2);
 
-        TaskTypeSpeedReeders.add(T1_S);
-        TaskTypeSpeedReeders.add(T2_S);
 
-        Station S1 = new Station("S1",1,false,false,getTaskTypeSpeedReeders(),0.2);
-        Station S2 = new Station("S2",2,true,true,getTaskTypeSpeedReeders());
-        Station S3 = new Station("S3",2,false,true,getTaskTypeSpeedReeders());
-        Station S4 = new Station("S4",3,true,true,getTaskTypeSpeedReeders(),0.5);
+        ArrayList<TaskTypeSpeedReeder> ttsr1 =new ArrayList<>();
+        ArrayList<TaskTypeSpeedReeder> ttsr2 =new ArrayList<>();
+        ArrayList<TaskTypeSpeedReeder> ttsr3 =new ArrayList<>();
+        ArrayList<TaskTypeSpeedReeder> ttsr4 =new ArrayList<>();
+
+
+
+        ttsr1.add(T1_S1);
+        ttsr1.add(T2_S2);
+
+
+        ttsr2.add(T1_S1);
+        ttsr2.add(T2_S3);
+
+        ttsr3.add(T2_S4);
+
+        ttsr4.add(T2_S5);
+        ttsr4.add(T2_S6);
+
+        Station S1 = new Station("S1",1,false,false,ttsr1,0.2);
+        Station S2 = new Station("S2",2,true,true,ttsr2);
+        Station S3 = new Station("S3",2,false,true,ttsr3);
+        Station S4 = new Station("S4",3,true,true,ttsr4,0.5);
 
         stations.add(S1);
         stations.add(S2);
@@ -209,6 +262,9 @@ public class Main {
         System.out.println();
         Event event1 = new Event(EventType.EVENT_START,eventTime,jobTypes,stations);
         events.add(event1);
+
+
+
     }
 
 
@@ -239,26 +295,32 @@ public class Main {
 
 
     public static void simulation() {
-        int i = 1;
+        int i = 0;
         for (Event event : events) {
             event.setTimePassed(0);
             while (event.getTimeRemaining() >= 0) {
-                if (event.getTimePassed() == 1) {
-                    supplyTasksForStations();
-                }
+
+
 
                 while (i < eventQueue.size() && event.getTimePassed() <= eventQueue.get(i).getEventTimes()) {
+
                     event.setTimePassed(eventQueue.get(i).getEventTimes());
                     event.setTimeRemaining(eventTime-Event.getTimePassed());
-                    printAllInfo(event);
+
                     if (event.getTimePassed() == eventQueue.get(i).getEventTimes()){
                         sc.nextLine();
                     }
-
                     if (i > eventQueue.size() ) {
                         break;
                     }
+
+
                     i++;
+                    if (event.getTimePassed()==1){
+                        giveStationsListsForStations();
+                    }
+                    printAllInfo(event);
+
                 }
                 if (i >= eventQueue.size() ) {
                     break;
@@ -291,7 +353,6 @@ public class Main {
                 tasks.set(j + 1, key);
             }
         }
-
 
 
     public static void printAllInfo(Event event){

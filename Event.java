@@ -86,12 +86,11 @@ public class Event {
     }
 
 
-
     public  void printStations(){
         for (Station Station: stations){
             System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
                     " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
-            printTaskTypeSpeedReeder();
+            printTaskTypeSpeedReeders(Station);
             System.out.println(" , Speed : "+ Station.getStationSpeed());
 
         }
@@ -109,11 +108,20 @@ public class Event {
         }
     }
 
-    public  void printTaskTypeSpeedReeder(){
-        for (TaskTypeSpeedReeder TaskTypeSpeedReeder:Main.getTaskTypeSpeedReeders()){
-            System.out.print(" , "+TaskTypeSpeedReeder.getTaskTypeID()+ "  "+TaskTypeSpeedReeder.getTaskTypeSpeed());
-        }
+
+
+    public   void  printTaskTypeSpeedReeders(Station station){
+
+            for (TaskTypeSpeedReeder taskTypeSpeedReeder:station.getTaskTypeSpeedReeders()){
+                System.out.print(" , "+ taskTypeSpeedReeder.getTaskTypeID()+" : "+taskTypeSpeedReeder.getTaskTypeSpeed());
+            }
+
+
     }
+
+
+
+
 
     public void printEventInfo(){
         System.out.println("EVENT TYPE : "+ getEventType() + " , DURATION : "+ getTimeRemaining()+" minutes");
