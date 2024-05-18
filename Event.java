@@ -15,6 +15,11 @@ public class Event {
         this.eventType = eventType;
     }
 
+    public Event(double eventTimes){
+        this.eventTimes=eventTimes;
+    }
+
+
 
 
     public double getEventTimes() {

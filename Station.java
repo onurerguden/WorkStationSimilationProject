@@ -37,7 +37,9 @@ public class Station {
 
     public  void printStringTasksForStations(Station station){
         for (Task task : tasksForStations){
-            System.out.print(task.getTaskTypeID()+" , ");
+            if (task.getSize()!=0){
+                System.out.print(task.getTaskTypeID()+" , ");
+            }
         }
     }
 
