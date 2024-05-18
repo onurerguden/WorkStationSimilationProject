@@ -15,6 +15,8 @@ public class Event {
         this.eventType = eventType;
     }
 
+
+
     public double getEventTimes() {
         return eventTimes;
     }
@@ -79,8 +81,9 @@ public class Event {
         for (Job job :jobTypes){
             System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
                     ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-getTimePassed()) +
-                    " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType()+" Tasks: ");
-            printTasks();
+                    " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType());
+           // printTasks();
+
             System.out.println();
         }
     }
@@ -96,17 +99,23 @@ public class Event {
         }
         System.out.println();
     }
-    public void printTasks(){
-        for (Task Task : jobTypeID.getTasks() ){
-            System.out.print(", "+ Task.getTaskTypeID()+" "+ Task.getSize());
+    /*public void printTasks(){
+        for (Job job : jobTypes ){
+            for (Task task : job.getJobTypeID().getTasks() ){
+                System.out.print(", "+ task.getTaskTypeID()+" "+ task.getSize());
+            }
         }
     }
+
+     */
 
     public void printAllTasks(){
         for (Task Task :Main.getTasks()){
             System.out.println("TASK TYPE ID : "+ Task.getTaskTypeID()+ ", TASK SIZE : "+ Task.getSize()+", TASK STATE : "+ Task.getTaskTypeState());
         }
     }
+
+
 
 
 

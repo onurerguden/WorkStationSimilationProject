@@ -13,23 +13,114 @@ public class Main {
     private static ArrayList<Station> stations=new ArrayList<>();
     private static ArrayList<Event> events =new ArrayList<>();
     private static ArrayList<Event> eventQueue = new ArrayList<>();
+    private static ArrayList<jobTypeID> jobTypeIDS = new ArrayList<>();
     static double eventTime = 0;
+
 
     public static ArrayList<Station> getStations() {
         return stations;
     }
 
-    public static void setStations(ArrayList<Station> stations) {
-        Main.stations = stations;
-    }
 
     public static void main(String[] args) {
         readDocuments();
         createObjectsManually();
+        //simulateWithoutOutput();
         createEventsManually();
+        //stationsExecuteTasks();
         //printEventQueue();
         simulation();
     }
+
+    public void createEvents(){
+        Event eventReadyToStart = new Event(0,EventType.EVENT_START_TO_WAIT);
+        Event eventStart = new Event(1,EventType.EVENT_START_TO_WAIT);
+        
+
+    }
+
+
+
+    /*
+    public static void stationsExecuteTasks() {
+        for (Station station : stations) {
+            ArrayList<Task> stationTasks = station.getTasksForStations();
+            if (stationTasks != null && !stationTasks.isEmpty()) {
+                System.out.println("Station " + station.getStationID() + " starting task execution.");
+
+                for (Task task : stationTasks) {
+                    double speed = station.getStationSpeed();
+
+                    // If the station has variable speed
+                    if (station.getStationSpeed() != 1.0) {
+                        speed = station.getStationSpeed() * (1 + (Math.random() * 0.4 - 0.2)); // +-20% variability
+                    }
+
+                    double duration = task.getSize() / speed;
+                    System.out.println("Executing Task " + task.getTaskTypeID() + " with size " + task.getSize() + " at speed " + speed + " will take " + duration + " minutes.");
+                    task.setSize(0); // Mark the task as completed (size 0)
+                    task.setTaskTypeState(TaskTypeState.COMPLETE);
+                }
+
+                System.out.println("Station " + station.getStationID() + " completed all tasks.");
+            } else {
+                System.out.println("Station " + station.getStationID() + " has no tasks to execute.");
+            }
+        }
+    }
+
+
+    public static void simulateWithoutOutput() {
+        // Initialize with the start event
+        Event e0 = new Event(0, EventType.EVENT_START);
+        Event e1 = new Event(1,EventType.EXECUTING);
+        eventQueue.add(e0);
+
+        double currentTime = 0;
+
+        // Process each station and its tasks
+        for (Station station : stations) {
+            ArrayList<Task> stationTasks = station.getTasksForStations();
+            if (stationTasks != null && !stationTasks.isEmpty()) {
+                while (!stationTasks.isEmpty()) {
+                    Task task = stationTasks.get(0); // Get the first task in the queue
+                    double speed = station.getStationSpeed();
+
+                    // If the station has variable speed
+                    if (station.getStationSpeed() != 1.0) {
+                        speed = station.getStationSpeed() * (1 + (Math.random() * 0.4 - 0.2)); // +-20% variability
+                    }
+
+                    double duration = task.getSize() / speed;
+                    task.setSize(0); // Mark the task as completed (size 0)
+                    task.setTaskTypeState(TaskTypeState.COMPLETE);
+
+                    // Create event for task completion
+                    createEvent(currentTime + duration, EventType.TASK_COMPLETE);
+                    currentTime += duration; // Advance the current time
+
+                    // Remove the completed task from the station's task list
+                    stationTasks.remove(task);
+
+                    // Create an event for the station handling the next task if there are more tasks
+                    if (!stationTasks.isEmpty()) {
+                        createEvent(currentTime, EventType.EXECUTING);
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    public static void createEvent(double eventTime, EventType eventType) {
+        Event event = new Event(eventTime, eventType);
+        eventQueue.add(event);
+    }
+
+     */
+
+
 
 
     public void Req2(){
@@ -37,7 +128,7 @@ public class Main {
     }
 
     public static void giveStationsListsForStations() {
-        
+
         for (Station station : stations) {
             station.setTasksForStations(new ArrayList<>()); // Ensure each station has an empty task list
         }
@@ -70,7 +161,6 @@ public class Main {
                     break;
                 }
             }
-
             // If no station could handle the task, log it and break to avoid infinite loop
             if (!taskAssigned) {
                 System.out.println("No station can handle the task with Task Type ID: " + currentTask.getTaskTypeID());
@@ -89,14 +179,6 @@ public class Main {
     }
 
 
-    public void checkChanges(){
-
-    }
-
-    public void createEvent(){
-
-    }
-
     public void printReport(){
 
     }
@@ -105,10 +187,10 @@ public class Main {
     public static void createEventsManually() {
        for (int i = 0; i<=45;i=i+5){
            if (i == 5){
-               Event event = new Event(1,EventType.EVENT_START);
+               Event event = new Event(1,EventType.EVENT_START_TO_WAIT);
                eventQueue.add(event);
            }
-               Event event = new Event(i,EventType.EVENT_START);
+               Event event = new Event(i,EventType.EVENT_START_TO_WAIT);
                eventQueue.add(event);
        }
     }
@@ -174,7 +256,14 @@ public class Main {
 
                 String jobID = tokens[0];
                 String jobTypeIDname = tokens[1];
-                jobTypeID jobTypeID = new jobTypeID(jobTypeIDname);
+
+
+                    jobTypeID jobTypeID = new jobTypeID(jobTypeIDname);
+                    jobTypeIDS .add(jobTypeID);
+
+
+
+
                 int startTime = Integer.parseInt(tokens[2]);
 
 
@@ -227,6 +316,7 @@ public class Main {
 
 
     public static void createObjectsManually(){
+
         Task T1 = new Task("T1",1);
         Task T2 = new Task("T2",2);
         Task T3 = new Task("T3",2.5);
@@ -234,6 +324,7 @@ public class Main {
         Task T5 = new Task("T3",4);
         Task T_1 = new Task("T_1",5);
         Task T21 = new Task("T21",1);
+
 
 
         tasks.add(T1);
@@ -248,11 +339,64 @@ public class Main {
         //tasks.add(T4);
         //tasks.add(T5);
         //tasks.add(T_1);
-        tasks.add(T21);
         tasks.add(T1);
+        tasks.add(T2);
+        tasks.add(T3);
+
+        tasks.add(T2);
+        tasks.add(T3);
+        tasks.add(T4);
 
         //Sort Task algorithm
+
+
+
+
+
+
+        // Create task lists for each job
+        ArrayList<Task> tasksForJob1 = new ArrayList<>();
+        tasksForJob1.add(tasks.get(0)); // T1
+        tasksForJob1.add(tasks.get(1)); // T2
+        tasksForJob1.add(tasks.get(2)); // T3
+
+        ArrayList<Task> tasksForJob2 = new ArrayList<>();
+        tasksForJob2.add(tasks.get(1)); // T2
+        tasksForJob2.add(tasks.get(2)); // T3
+        tasksForJob2.add(tasks.get(5)); // T4
+
+        ArrayList<Task> tasksForJob3 = new ArrayList<>();
+        tasksForJob3.add(tasks.get(7)); // T3
+
+        // Assign tasks to job types based on JobTypeID
+        for (jobTypeID jobTypeId : jobTypeIDS) {
+            switch (jobTypeId.getJobTypeID()) {
+                case "J1":
+                    jobTypeId.setTasks(tasksForJob1);
+                    break;
+                case "J2":
+                    jobTypeId.setTasks(tasksForJob2);
+                    break;
+                case "J3":
+                    jobTypeId.setTasks(tasksForJob3);
+                    break;
+            }
+        }
+
+        // Assign job type IDs to jobs
+        for (Job job : jobTypes) {
+            for (jobTypeID jobTypeId : jobTypeIDS) {
+                if (job.getJobTypeID().getJobTypeID().equals(jobTypeId.getJobTypeID())) {
+                    job.setJobTypeID(jobTypeId);
+                }
+            }
+        }
+
+        printTasksJobJobtype();
+
+
         sortTasks(tasks);
+
 
         TaskTypeSpeedReeder T1_S1 = new TaskTypeSpeedReeder("T1",2);
         TaskTypeSpeedReeder T2_S2 = new TaskTypeSpeedReeder("T2",3);
@@ -301,11 +445,20 @@ public class Main {
 
         System.out.println("|-------------------------------|");
         System.out.println();
-        Event event1 = new Event(EventType.EVENT_START,eventTime,jobTypes,stations);
+        Event event1 = new Event(EventType.EVENT_START_TO_WAIT,eventTime,jobTypes,stations);
         events.add(event1);
 
 
+    }
 
+    public static void printTasksJobJobtype(){
+        for (Job job : jobTypes) {
+            System.out.println("Job ID: " + job.getJobID());
+            System.out.println("Associated Tasks:");
+            for (Task task : job.getJobTypeID().getTasks()) {
+                System.out.println(" - Task Type ID: " + task.getTaskTypeID() + ", Size: " + task.getSize());
+            }
+        }
     }
 
 
@@ -359,6 +512,7 @@ public class Main {
                     i++;
                     if (event.getTimePassed()==1){
                         giveStationsListsForStations();
+                       // stationsExecuteTasks();
                     }
                     printAllInfo(event);
 

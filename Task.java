@@ -19,7 +19,9 @@ public class Task {
         return TaskTypeState;
     }
 
-
+    public void setTaskTypeState(TaskTypeState taskTypeState) {
+        TaskTypeState = taskTypeState;
+    }
 
     public double getSize() {
         return size;
