@@ -49,13 +49,31 @@ public class Main {
         }
     }
 
+    public static boolean isAllTasksCompleted(){
+        int a = tasks.size();
+        int b = 0;
+            for (Task task : tasks) {
+                if(task.getTaskTypeState().equals(TaskTypeState.COMPLETE)){
+                    b++;
+                    if (b==a){
+                        return true;
+                    }
+                }else {
+                    return false;
+                }
+
+            }
+        return false;
+    }
+
     public static void simulation() {
         eventTime = 0;
         for (Event event : events) {
             event.setTimePassed(0);
             event.setEventTimes(0);
 
-            while (event.getTimeRemaining() >= 0) {
+            while (event.getTimeRemaining() >= 0 && isAllTasksCompleted()==false) {
+
                 while (!eventQueue.isEmpty() && event.getTimePassed() <= eventQueue.get(0).getEventTimes()) {
                     Event currentEvent = eventQueue.remove(0);
                     event.setTimePassed(currentEvent.getEventTimes());
@@ -84,10 +102,13 @@ public class Main {
 
 
                     printAllInfo(event);
+                    eventQueue.remove(eventQueue.getFirst());
                 }
-                if (eventQueue.isEmpty()) {
+
+                if (eventQueue.getLast().getEventTimes() ==event.getEventTimes()) {
                     break;
                 }
+
             }
 
             event.setTimePassed(event.getTimePassed() + 1);
@@ -217,6 +238,7 @@ public class Main {
                 if (jobTasks != null) { // Check if jobTasks is not null
                     for (Task task : jobTasks) {
                         if (task.getTaskTypeState() == TaskTypeState.IN_EXECUTION) {
+                           // System.out.println("HELLO");
                             job.setJobType(jobType.EXECUTING);
                             return; // Exit after updating the job state
                         }
