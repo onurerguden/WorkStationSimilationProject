@@ -2,8 +2,8 @@
     2.5 T4 T5-4 T1 1 T5 4 5 21T)
 (JOBTYPES
     (J1 T1 1 T2 1 T3 3)
-    (J2 T2 3 T3 1 T4 4 T5 2)
-    (J3 T2 T3 5 T4 3)
+    (J2 T2 3 T3 1 T4 4 T5 2 )
+    (J3 T2 T3 5 T4 3 T1 1)
     (J2 T1 5 T6 11 -2 ))
 (STATIONS
     (S1 1 N N T1 2 T2 3 0.20)

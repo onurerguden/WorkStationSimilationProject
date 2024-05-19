@@ -75,8 +75,6 @@ public class Job {
         this.startTime = startTime;
     }
 
-    //getJobID, getJobType, getStartTime, getDuration, getDeadline + setters of these
-
 
     public jobTypeID getJobTypeID() {
         return jobTypeID;

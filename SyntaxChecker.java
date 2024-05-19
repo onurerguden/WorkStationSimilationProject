@@ -27,30 +27,4 @@ class SyntaxChecker {
             }
         }
     }
-
-    public boolean hasErrors() {
-        return !errors.isEmpty();
-    }
-
-
-    private static boolean checkAccessibility(String fileName, SyntaxChecker SC) {
-        File file = new File(fileName);
-        if (!file.exists() || !file.canRead()) {
-            SC.add("The file does not exist or is not accessible: " + fileName);
-            return false;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            SC.add("An error occurred while reading the file: " + e.getMessage());
-            return false;
-        }
-
-        return true;
-    }
-
 }

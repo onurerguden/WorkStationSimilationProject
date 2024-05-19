@@ -119,21 +119,4 @@ public class Station {
     public void setStationSpeed(int stationSpeed) {
         this.stationSpeed = stationSpeed;
     }
-
-
-    public void removeTask() {
-
-    }
-
-    public boolean canHandleTask(Task task) {
-        // Assume this method checks if the station can handle the given task type
-        return true;
-    }
-
-    public double getUtilization() {
-        // Assume this method calculates station utilization
-        return 0;
-    }
-
-
 }

@@ -12,8 +12,6 @@ public class TaskTypeSpeedReeder {
         return TaskTypeID;
     }
 
-
-
     public void setTaskTypeID(String taskTypeID) {
         TaskTypeID = taskTypeID;
     }

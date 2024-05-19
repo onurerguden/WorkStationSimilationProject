@@ -16,7 +16,6 @@ public class Event {
     }
 
 
-
     public double getEventTimes() {
         return eventTimes;
     }
@@ -77,24 +76,6 @@ public class Event {
         this.timeRemaining = time;
     }
 
-    /*public void printJobs() {
-
-        for (Event event : Main.getEvents()) {
-            for (Job job : event.getJobTypes()) {
-                // Calculate the remaining duration of the job
-                double remainingDuration = job.getDuration() - (getTimePassed() - job.getStartTime());
-
-                System.out.print((("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
-                        ", Start Time: " + job.getStartTime() + ", Duration: " + remainingDuration) +
-                        " minutes, Deadline: " + job.getDeadline() + ", Job Type: " + job.getJobType()));
-
-
-                System.out.println();
-            }
-        }
-    }
-
-     */
 
     public  void printJobs(){
         for (Event event : Main.getEvents()){
@@ -121,15 +102,7 @@ public class Event {
             System.out.println();
         }
     }
-    /*public void printTasks(){
-        for (Job job : jobTypes ){
-            for (Task task : job.getJobTypeID().getTasks() ){
-                System.out.print(", "+ task.getTaskTypeID()+" "+ task.getSize());
-            }
-        }
-    }
 
-     */
 
     public void printAllTasks(){
         for (Task Task :Main.getTasks()){
