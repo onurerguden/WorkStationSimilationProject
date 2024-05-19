@@ -23,7 +23,11 @@ public class Main {
 
     public static void main(String[] args) {
         readDocuments();
-        createObjectsManually();
+        Event event1 = new Event(EventType.EVENT_START_TO_WAIT, eventTime, jobTypes, stations);
+        events.add(event1);
+
+
+        //createObjectsManually();
         createEventsManually();
         simulation();
         reportStationUtilization();
@@ -67,11 +71,17 @@ public class Main {
                         stationsExecuteTasks();
                     }
 
-                    // Check and update job execution status
-                    for (Job job : jobTypes) {
-                        isJobOnExecution(job);
-                        isJobFinished(job);
+
+                    if (event.getTimePassed() >1) {
+                        // Check and update job execution status
+                        for (Job job : jobTypes) {
+                            isJobOnExecution(job);
+                            isJobFinished(job);
+                        }
                     }
+
+
+
 
                     printAllInfo(event);
                 }
@@ -169,38 +179,53 @@ public class Main {
 
 
     public static void isJobFinished(Job job) {
-        int jobTaskNo = job.getJobTypeID().getTasks().size();
-        int k = 0;
-        for (Task task : tasks) {
-            if (task.getTaskTypeState() == TaskTypeState.COMPLETE ) {
-                for (Task jobTasks :job.getJobTypeID().getTasks()){
-                    if (task.getTaskTypeID().equals(jobTasks.getTaskTypeID())){
-                        k++;
-                        if (jobTaskNo==k){
-                            job.setJobType(jobType.COMPLETED);
+        try {
+            if (job.getJobTypeID() == null) {
+                throw new NullPointerException("JobTypeID is null for Job ID: " + job.getJobID());
+            }
+            if (job.getJobTypeID().getTasks() == null) {
+                throw new NullPointerException("Tasks list is null for JobTypeID: " + job.getJobTypeID().getJobTypeID());
+            }
+
+            int jobTaskNo = job.getJobTypeID().getTasks().size();
+            int k = 0;
+
+            for (Task task : tasks) {
+                if (task.getTaskTypeState() == TaskTypeState.COMPLETE) {
+                    for (Task jobTasks : job.getJobTypeID().getTasks()) {
+                        if (task.getTaskTypeID().equals(jobTasks.getTaskTypeID())) {
+                            k++;
+                            if (jobTaskNo == k) {
+                                job.setJobType(jobType.COMPLETED);
+                            }
                         }
                     }
                 }
             }
+        } catch (NullPointerException e) {
+            System.err.println("Error in isJobFinished: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
 
     public static void isJobOnExecution(Job job) {
         for (Event event : events) {
             for (Job job1 : event.getJobTypes()) {
                 ArrayList<Task> jobTasks = job1.getJobTypeID().getTasks();
-                for (Task task : jobTasks) {
-                    if (task.getTaskTypeState() == TaskTypeState.IN_EXECUTION) {
-                        job.setJobType(jobType.EXECUTING);
-                        return; // Exit after updating the job state
+                if (jobTasks != null) { // Check if jobTasks is not null
+                    for (Task task : jobTasks) {
+                        if (task.getTaskTypeState() == TaskTypeState.IN_EXECUTION) {
+                            job.setJobType(jobType.EXECUTING);
+                            return; // Exit after updating the job state
+                        }
                     }
                 }
             }
         }
         System.out.println("Job ID: " + job.getJobID() + " is not in EXECUTION.");
     }
-
 
     public static void updateJobCompletionStatus() {
         for (Event event : events){
@@ -256,28 +281,21 @@ public class Main {
     public static void readDocuments() {
         readWorkFlow();
         readJobFile();
+
     }
 
     public static void readWorkFlow() {
         System.out.println(stars);
         System.out.println("Enter workflow file name! -For example :sample_workflow.txt");
         String workflowName = sc.nextLine();
-        String fileName = workflowName;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            String line;
-            System.out.println("--File is accessible--");
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            reader.close();
-        } catch (IOException e) {
-            if (e instanceof FileNotFoundException) {
-                System.out.println("Error: The file does not exist or is not accessible.");
-            } else {
-                e.printStackTrace();
-            }
-        }
+        Parser kDot = new Parser(workflowName);
+        //tasks
+        tasks = kDot.getTasks();
+        //jobTypeID
+        jobTypeIDS =kDot.getJobs();
+        //stations
+        stations = kDot.getStations();
+        kDot.printErrors();
     }
 
     public static void readJobFile() {

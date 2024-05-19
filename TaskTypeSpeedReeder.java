@@ -12,12 +12,15 @@ public class TaskTypeSpeedReeder {
         return TaskTypeID;
     }
 
+
+
     public void setTaskTypeID(String taskTypeID) {
         TaskTypeID = taskTypeID;
     }
 
     public double getTaskTypeSpeed() {
         return TaskTypeSpeed;
+
     }
 
     public void setTaskTypeSpeed(double takTypeSpeed) {

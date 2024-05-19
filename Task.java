@@ -10,7 +10,7 @@ public class Task {
         TaskTypeState= TaskTypeState.START;
     }
     public Task(String taskTypeID) {
-        this.size = 0;
+        this.size = 1;
         this.taskID = taskTypeID;
         TaskTypeState= TaskTypeState.START;
     }

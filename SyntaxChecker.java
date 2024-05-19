@@ -12,7 +12,7 @@ class SyntaxChecker {
         errors = new ArrayList<>();
     }
 
-    public void addError(String error) {
+    public void add(String error) {
         errors.add(error);
     }
 
@@ -36,7 +36,7 @@ class SyntaxChecker {
     private static boolean checkAccessibility(String fileName, SyntaxChecker SC) {
         File file = new File(fileName);
         if (!file.exists() || !file.canRead()) {
-            SC.addError("The file does not exist or is not accessible: " + fileName);
+            SC.add("The file does not exist or is not accessible: " + fileName);
             return false;
         }
 
@@ -46,7 +46,7 @@ class SyntaxChecker {
                 System.out.println(line);
             }
         } catch (IOException e) {
-            SC.addError("An error occurred while reading the file: " + e.getMessage());
+            SC.add("An error occurred while reading the file: " + e.getMessage());
             return false;
         }
 

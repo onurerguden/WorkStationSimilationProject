@@ -16,7 +16,12 @@ public class Station {
         this.multiFlag = multiFlag;
         this.fifoFlag = fifoFlag;
         this.TaskTypeSpeedReeders =TaskTypeSpeedReeders;
-        this.stationSpeed = stationSpeed;
+        this.stationSpeed=stationSpeed;
+        if (stationSpeed==0){
+        this.stationSpeed=1;
+        }
+
+
         this.tasksForStations = null;
         this.busyTime = 0;
     }
@@ -31,6 +36,11 @@ public class Station {
         this.tasksForStations = null;
         this.busyTime = 0;
     }
+
+    public Station(String stationName) {
+        setStationSpeed(1);
+    }
+
 
 
     public double getBusyTime() {
