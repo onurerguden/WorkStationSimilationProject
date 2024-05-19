@@ -9,6 +9,7 @@ public class Job {
     private int deadline;
     private int startTime;
     private jobTypeID jobTypeID;
+    private double completionTime;
 
 
 
@@ -20,6 +21,15 @@ public class Job {
         this.jobType = jobType;
         this.jobTypeID = jobTypeID;
         this.startTime = startTime;
+        this.completionTime = -1;
+    }
+
+    public double getCompletionTime() {
+        return completionTime;
+    }
+
+    public void setCompletionTime(double completionTime) {
+        this.completionTime = completionTime;
     }
 
 

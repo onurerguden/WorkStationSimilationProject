@@ -77,27 +77,49 @@ public class Event {
         this.timeRemaining = time;
     }
 
-    public  void printJobs(){
-        for (Job job :jobTypes){
-            System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
-                    ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-getTimePassed()) +
-                    " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType());
-           // printTasks();
+    /*public void printJobs() {
 
-            System.out.println();
+        for (Event event : Main.getEvents()) {
+            for (Job job : event.getJobTypes()) {
+                // Calculate the remaining duration of the job
+                double remainingDuration = job.getDuration() - (getTimePassed() - job.getStartTime());
+
+                System.out.print((("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
+                        ", Start Time: " + job.getStartTime() + ", Duration: " + remainingDuration) +
+                        " minutes, Deadline: " + job.getDeadline() + ", Job Type: " + job.getJobType()));
+
+
+                System.out.println();
+            }
+        }
+    }
+
+     */
+
+    public  void printJobs(){
+        for (Event event : Main.getEvents()){
+            for (Job job :event.getJobTypes()){
+                System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
+                        ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-getTimePassed()) +
+                        " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType());
+                // printTasks();
+                System.out.println();
+            }
         }
     }
 
 
-    public  void printStations(){
-        for (Station Station: stations){
-            System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
-                    " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
-            printTaskTypeSpeedReeders(Station);
-            System.out.println(" , Speed : "+ Station.getStationSpeed());
+    public  void printStations() {
+        for (Event event : Main.getEvents()) {
+            for (Station Station : event.getStations()) {
+                System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
+                        " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
+                printTaskTypeSpeedReeders(Station);
+                System.out.println(" , Speed : " + Station.getStationSpeed());
 
+            }
+            System.out.println();
         }
-        System.out.println();
     }
     /*public void printTasks(){
         for (Job job : jobTypes ){
@@ -116,20 +138,11 @@ public class Event {
     }
 
 
-
-
-
-    public   void  printTaskTypeSpeedReeders(Station station){
-
+    public  void  printTaskTypeSpeedReeders(Station station){
             for (TaskTypeSpeedReeder taskTypeSpeedReeder:station.getTaskTypeSpeedReeders()){
                 System.out.print(" , "+ taskTypeSpeedReeder.getTaskTypeID()+" : "+taskTypeSpeedReeder.getTaskTypeSpeed());
             }
-
-
     }
-
-
-
 
 
     public void printEventInfo(){
@@ -141,7 +154,6 @@ public class Event {
     }
 
     public  void printTimePassed(){
-
         if (getTimePassed()>Main.eventTime){
             System.out.println("-------------------------------");
             System.out.println("--EVENT TIME: DEADLINE PASSED--");
@@ -153,7 +165,9 @@ public class Event {
     }
 
     public  void printStationHandlingSituation(){
-        for (Station station : stations){
+        if (Event.getTimePassed()>2){
+        }else {
+            for (Station station : stations){
 
                 System.out.print("STATION ID : "+station.getStationID());
                 if (station.getTasksForStations() == null ){
@@ -165,7 +179,8 @@ public class Event {
                     System.out.println();
                 }
 
-            System.out.println();
+                System.out.println();
+            }
         }
     }
 }

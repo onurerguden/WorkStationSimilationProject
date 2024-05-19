@@ -1,4 +1,6 @@
 public enum TaskTypeState {
     START,
-    COMPLETE
+    IN_EXECUTION,
+    COMPLETE,
+    NO_STATION
 }

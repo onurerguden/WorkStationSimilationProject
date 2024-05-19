@@ -8,6 +8,7 @@ public class Station {
     private double stationSpeed;
     private ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private  ArrayList<Task> tasksForStations = new ArrayList<>();
+    private double busyTime;
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder>TaskTypeSpeedReeders, double stationSpeed) {
         this.stationID = stationID;
@@ -17,6 +18,7 @@ public class Station {
         this.TaskTypeSpeedReeders =TaskTypeSpeedReeders;
         this.stationSpeed = stationSpeed;
         this.tasksForStations = null;
+        this.busyTime = 0;
     }
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders) {
@@ -27,8 +29,17 @@ public class Station {
         this.TaskTypeSpeedReeders=TaskTypeSpeedReeders;
         this.stationSpeed = 1.0;
         this.tasksForStations = null;
+        this.busyTime = 0;
     }
 
+
+    public double getBusyTime() {
+        return busyTime;
+    }
+
+    public void addBusyTime(double time) {
+        this.busyTime += time;
+    }
 
 
     public  ArrayList<Task> getTasksForStations() {
