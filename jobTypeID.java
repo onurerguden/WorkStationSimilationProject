@@ -11,7 +11,7 @@ public class jobTypeID {
 
     public jobTypeID(String jobTypeID) {
         this.jobTypeID = jobTypeID;
-        this.tasks=null;
+        this.tasks=getTasks();
     }
 
 

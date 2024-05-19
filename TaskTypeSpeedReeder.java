@@ -18,6 +18,7 @@ public class TaskTypeSpeedReeder {
 
     public double getTaskTypeSpeed() {
         return TaskTypeSpeed;
+
     }
 
     public void setTaskTypeSpeed(double takTypeSpeed) {

@@ -8,6 +8,7 @@ public class Station {
     private double stationSpeed;
     private ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private  ArrayList<Task> tasksForStations = new ArrayList<>();
+    private double busyTime;
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder>TaskTypeSpeedReeders, double stationSpeed) {
         this.stationID = stationID;
@@ -15,8 +16,14 @@ public class Station {
         this.multiFlag = multiFlag;
         this.fifoFlag = fifoFlag;
         this.TaskTypeSpeedReeders =TaskTypeSpeedReeders;
-        this.stationSpeed = stationSpeed;
+        this.stationSpeed=stationSpeed;
+        if (stationSpeed==0){
+        this.stationSpeed=1;
+        }
+
+
         this.tasksForStations = null;
+        this.busyTime = 0;
     }
 
     public Station(String stationID, int maxCapacity, boolean multiFlag, boolean fifoFlag, ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders) {
@@ -27,8 +34,22 @@ public class Station {
         this.TaskTypeSpeedReeders=TaskTypeSpeedReeders;
         this.stationSpeed = 1.0;
         this.tasksForStations = null;
+        this.busyTime = 0;
     }
 
+    public Station(String stationName) {
+        setStationSpeed(1);
+    }
+
+
+
+    public double getBusyTime() {
+        return busyTime;
+    }
+
+    public void addBusyTime(double time) {
+        this.busyTime += time;
+    }
 
 
     public  ArrayList<Task> getTasksForStations() {
@@ -100,21 +121,4 @@ public class Station {
     public void setStationSpeed(int stationSpeed) {
         this.stationSpeed = stationSpeed;
     }
-
-
-    public void removeTask() {
-
-    }
-
-    public boolean canHandleTask(Task task) {
-        // Assume this method checks if the station can handle the given task type
-        return true;
-    }
-
-    public double getUtilization() {
-        // Assume this method calculates station utilization
-        return 0;
-    }
-
-
 }

@@ -1,96 +1,251 @@
 import java.io.*;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Scanner;
 
 public class Main {
-    public static final String stars ="******************";
+    public static final String stars = "******************";
     static Scanner sc = new Scanner(System.in);
     private static ArrayList<Job> jobTypes = new ArrayList<>();
     private static ArrayList<TaskTypeSpeedReeder> TaskTypeSpeedReeders = new ArrayList<>();
     private static ArrayList<Task> tasks = new ArrayList<>();
-    private static ArrayList<Station> stations=new ArrayList<>();
-    private static ArrayList<Event> events =new ArrayList<>();
+    private static ArrayList<Station> stations = new ArrayList<>();
+    private static ArrayList<Event> events = new ArrayList<>();
     private static ArrayList<Event> eventQueue = new ArrayList<>();
     private static ArrayList<jobTypeID> jobTypeIDS = new ArrayList<>();
+    private static double highestDeadline;
     static double eventTime = 0;
-    private static Map<String, Map<String, String>> jobParsedTaskTypesWithSize = new HashMap<>();
 
 
 
-    public static ArrayList<Station> getStations() {
-        return stations;
+    public static ArrayList<Event> getEvents() {
+        return events;
+    }
+
+
+    public static void createTheEvent(){
+        Event event1 = new Event(EventType.EVENT_START_TO_WAIT, eventTime, jobTypes, stations);
+        events.add(event1);
     }
 
 
     public static void main(String[] args) {
         readDocuments();
-        createObjectsManually();
-        //simulateWithoutOutput();
-        //createEventsManually();
-        createEvents();
-        //stationsExecuteTasks();
-        //printEventQueue();
+        createTheEvent();
+        createEventsManually();
         simulation();
+        reportStationUtilization();
+        reportAverageJobTardiness();
     }
 
-    public static void sortEvents(ArrayList<Event> eventQueue) {
-        for (int i = 1; i < eventQueue.size(); i++) {
-            Event key = eventQueue.get(i);
-            int j = i - 1;
 
-            while (j >= 0 && eventQueue.get(j).getEventTimes() > key.getEventTimes()) {
-                eventQueue.set(j + 1, eventQueue.get(j));
-                j = j - 1;
-            }
-            eventQueue.set(j + 1, key);
+    public static void waitForOneSecond() {
+        try {
+            Thread.sleep(300);
+            System.out.println("                                -                            ");
+            Thread.sleep(200);
+            System.out.println("                                -                            ");
+            Thread.sleep(200);
+            System.out.println("                                -                            ");
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Thread was interrupted, Failed to complete operation");
         }
     }
 
-    public static void createEvents(){
-        Event eventReadyToStart = new Event(0,EventType.EVENT_START_TO_WAIT);
-        Event eventStart = new Event(1,EventType.EVENT_START_TO_WAIT);
-        eventQueue.add(eventReadyToStart);
-        eventQueue.add(eventStart);
-        stationsExecuteTasks();
-        sortEvents(eventQueue);
-    }
 
-    public static void stationsExecuteTasks() {
-        eventTime=0;
-        for (Station station : stations) {
-            ArrayList<Task> stationTasks = station.getTasksForStations();
-            if (stationTasks != null && !stationTasks.isEmpty()) {
-                System.out.println("Station " + station.getStationID() + " starting task execution.");
-
-                for (Task task : stationTasks) {
-                    if (task.getSize()!=0){
-                        double speed = station.getStationSpeed();
-
-                        // If the station has variable speed
-                        if (station.getStationSpeed() != 1.0) {
-                            speed = station.getStationSpeed() * (1 + (Math.random() * 0.4 - 0.2)); // +-20% variability
-                        }
-
-                        double duration = task.getSize() / speed;
-                        System.out.println("Executing Task " + task.getTaskTypeID() + " with size " + task.getSize() + " at speed " + speed + " will take " + duration + " minutes.");
-                        task.setSize(0); // Mark the task as completed (size 0)
-                        task.setTaskTypeState(TaskTypeState.COMPLETE);
-
-                        // Create event for task completion
-                        createEvent(eventTime + duration, EventType.TASK_COMPLETE);
-                        eventTime += duration;
+    public static boolean isAllTasksCompleted(){
+        int a = tasks.size();
+        int b = 0;
+            for (Task task : tasks) {
+                if(task.getTaskTypeState().equals(TaskTypeState.COMPLETE)){
+                    b++;
+                    if (b==a){
+                        return true;
                     }
+                }else {
+                    return false;
                 }
 
-                System.out.println("Station " + station.getStationID() + " completed all tasks.");
-            } else {
-                System.out.println("Station " + station.getStationID() + " has no tasks to execute.");
+            }
+        return false;
+    }
+
+
+
+    public static void simulation() {
+        eventTime = 0;
+        for (Event event : events) {
+            event.setTimePassed(0);
+            event.setEventTimes(0);
+            while (event.getTimeRemaining() >= 0 && isAllTasksCompleted()==false) {
+
+                while (!eventQueue.isEmpty() && event.getTimePassed() <= eventQueue.get(0).getEventTimes()) {
+                    Event currentEvent = eventQueue.remove(0);
+                    event.setTimePassed(currentEvent.getEventTimes());
+                    event.setTimeRemaining(highestDeadline - event.getTimePassed());
+
+                    if (event.getTimePassed() == currentEvent.getEventTimes()) {
+                        sc.nextLine();
+                    }
+
+                    if (currentEvent.getEventType() == EventType.EXECUTING) {
+                        giveStationsListsForStations();
+                        for (Job job:event.getJobTypes()){
+                            job.setJobType(jobType.EXECUTING);
+                        }
+                        printAllInfo(event);
+                        stationsExecuteTasks();
+                    }
+
+
+                    if (event.getTimePassed() >1) {
+                        for (Job job : jobTypes) {
+                            isJobOnExecution(job);
+                            isJobFinished(job);
+                        }
+                    }
+
+                    printAllInfo(event);
+                    eventQueue.remove(eventQueue.getFirst());
+                }
+
+                if (eventQueue.getLast().getEventTimes() ==event.getEventTimes()) {
+                    break;
+                }
+
+            }
+
+            event.setTimePassed(event.getTimePassed() + 1);
+            event.setEventType(EventType.TASK_COMPLETE);
+            System.out.println();
+            System.out.println("****************************");
+            System.out.println("-------EVENT COMPLETED-------");
+            System.out.println("****************************");
+            System.out.println();
+            System.out.println();
+            printAllInfo(event);
+        }
+
+
+    }
+
+
+
+    public static void stationsExecuteTasks() {
+        for (Event event : events) {
+            tasks.clear();
+            for (Station station : event.getStations()) {
+                ArrayList<Task> stationTasks = station.getTasksForStations();
+                tasks.addAll(stationTasks);
             }
         }
-        for (Event event:eventQueue){
-            System.out.println(event.getEventTimes());
+
+        for (Event event : events) {
+            eventTime = 0;
+            System.out.println("--------------------------------------------------------------");
+            System.out.println("--------------------------SIMULATION--------------------------");
+            System.out.println("--------------------------------------------------------------");
+            System.out.println("----------------------Press Enter to see-----------------------");
+            sc.nextLine();
+            for (int i = 0; i < 6; i++) {
+                System.out.println();
+            }
+
+            for (Station station : event.getStations()) {
+                ArrayList<Task> stationTasks = station.getTasksForStations();
+                if (stationTasks != null && !stationTasks.isEmpty()) {
+                    System.out.println("Station " + station.getStationID() + " starting task execution.");
+
+                    for (Task task : stationTasks) {
+                        if (task.getSize() != 0) {
+                            double speed = station.getStationSpeed();
+
+                            if (station.getStationSpeed() != 1.0) {
+                                speed = station.getStationSpeed() * (1 + (Math.random() * station.getStationSpeed()));
+                            }
+
+                            double duration = task.getSize() / speed;
+                            System.out.println("Executing Task " + task.getTaskTypeID() + " with size " + task.getSize() + " at speed " + speed + " will take " + duration + " minutes.");
+                            waitForOneSecond();
+
+                            task.setTaskTypeState(TaskTypeState.COMPLETE);
+                            task.setSize(0);
+
+                            // Update job status after task completion
+                            for (Job job : jobTypes) {
+                                isJobOnExecution(job);
+                                isJobFinished(job);
+                            }
+
+                            // Create event for task completion
+                            createEvent(eventTime + duration, EventType.TASK_COMPLETE);
+                            eventTime += duration;
+                            event.setTimePassed(eventTime);
+                            event.setTimeRemaining(event.getTimeRemaining() - Event.getTimePassed());
+                            printEventTime();
+                            printAllInfo(event);
+                            sc.nextLine();
+                            station.addBusyTime(duration);
+                            // Add to station's busy time
+                        }
+                    }
+                    System.out.println("Station " + station.getStationID() + " completed all tasks.");
+                } else {
+                    System.out.println("Station " + station.getStationID() + " has no tasks to execute.");
+                }
+            }
         }
     }
+
+
+
+    public static void isJobFinished(Job job) {
+        try {
+            if (job.getJobTypeID() == null) {
+                throw new NullPointerException("JobTypeID is null for Job ID: " + job.getJobID());
+            }
+            if (job.getJobTypeID().getTasks() == null) {
+                throw new NullPointerException("Tasks list is null for JobTypeID: " + job.getJobTypeID().getJobTypeID());
+            }
+
+            int jobTaskNo = job.getJobTypeID().getTasks().size();
+            int completedTaskCount = 0;
+
+            for (Task task : job.getJobTypeID().getTasks()) {
+                if (task.getTaskTypeState() == TaskTypeState.COMPLETE) {
+                    completedTaskCount++;
+                }
+            }
+            if (completedTaskCount == jobTaskNo) {
+                job.setJobType(jobType.COMPLETED);
+            }
+        } catch (NullPointerException e) {
+            System.err.println("Error in isJobFinished: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    public static void isJobOnExecution(Job job) {
+        boolean isExecuting = false;
+        for (Task task : job.getJobTypeID().getTasks()) {
+            if (task.getTaskTypeState() == TaskTypeState.IN_EXECUTION) {
+                isExecuting = true;
+                break;
+            }
+        }
+        if (isExecuting) {
+            job.setJobType(jobType.EXECUTING);
+        } else {
+            job.setJobType(jobType.WAITING_TO_START);
+        }
+    }
+
+
 
     public static void createEvent(double eventTime, EventType eventType) {
         Event event = new Event(eventTime, eventType);
@@ -99,142 +254,25 @@ public class Main {
 
 
 
-
-/*
-    public static void simulateWithoutOutput() {
-        // Initialize with the start event
-        Event e0 = new Event(0, EventType.EVENT_START_TO_WAIT);
-        Event e1 = new Event(1,EventType.EXECUTING);
-        eventQueue.add(e0);
-
-        double currentTime = 0;
-
-        // Process each station and its tasks
-        for (Station station : stations) {
-            ArrayList<Task> stationTasks = station.getTasksForStations();
-            if (stationTasks != null && !stationTasks.isEmpty()) {
-                while (!stationTasks.isEmpty()) {
-                    Task task = stationTasks.get(0); // Get the first task in the queue
-                    double speed = station.getStationSpeed();
-
-                    // If the station has variable speed
-                    if (station.getStationSpeed() != 1.0) {
-                        speed = station.getStationSpeed() * (1 + (Math.random() * 0.4 - 0.2)); // +-20% variability
-                    }
-
-                    double duration = task.getSize() / speed;
-                    task.setSize(0); // Mark the task as completed (size 0)
-                    task.setTaskTypeState(TaskTypeState.COMPLETE);
-
-                    // Create event for task completion
-                    createEvent(currentTime + duration, EventType.TASK_COMPLETE);
-                    currentTime += duration; // Advance the current time
-
-                    // Remove the completed task from the station's task list
-                    stationTasks.remove(task);
-
-                    // Create an event for the station handling the next task if there are more tasks
-                    if (!stationTasks.isEmpty()) {
-                        createEvent(currentTime, EventType.EXECUTING);
-                    }
-                }
-            }
-        }
-    }
-
- */
-
-
-
-
-
-
-
-
-    public void Req2(){
-
-    }
-    //parse tasktypes try-ons
-
-    public static void giveStationsListsForStations() {
-
-        for (Station station : stations) {
-            station.setTasksForStations(new ArrayList<>()); // Ensure each station has an empty task list
-        }
-
-        int stationIndex = 0;
-
-        while (!tasks.isEmpty()) {
-            Task currentTask = tasks.getFirst();
-            boolean taskAssigned = false;
-
-            for (int i = 0; i < stations.size(); i++) {
-                Station station = stations.get(stationIndex);
-                stationIndex = (stationIndex + 1) % stations.size(); // Move to the next station
-
-                for (TaskTypeSpeedReeder taskTypeSpeedReeder : station.getTaskTypeSpeedReeders()) {
-                    if (taskTypeSpeedReeder.getTaskTypeID().equals(currentTask.getTaskTypeID())) {
-                        System.out.println("Assigning Task Type ID: " + currentTask.getTaskTypeID() + " to Station ID: " + station.getStationID());
-
-                        // Add the task to the station's task list
-                        station.getTasksForStations().add(currentTask);
-
-                        // Remove the task from the global task list
-                        tasks.removeFirst();
-
-                        taskAssigned = true;
-                        break;
-                    }
-                }
-                if (taskAssigned) {
-                    break;
-                }
-            }
-            // If no station could handle the task, log it and break to avoid infinite loop
-            if (!taskAssigned) {
-                System.out.println("No station can handle the task with Task Type ID: " + currentTask.getTaskTypeID());
-                break;
-            }
-        }
-
-        // Print the final assignment for debugging
-        for (Station station : stations) {
-            System.out.println("Station ID: " + station.getStationID() + " has the following tasks assigned:");
-            for (Task task : station.getTasksForStations()) {
-                System.out.println(" - Task Type ID: " + task.getTaskTypeID());
-            }
-        }
-
-    }
-
-
-    public void printReport(){
-
-    }
-
-
     public static void createEventsManually() {
-       for (int i = 0; i<=45;i=i+5){
-           if (i == 5){
-               Event event = new Event(1,EventType.EVENT_START_TO_WAIT);
-               eventQueue.add(event);
-           }
-               Event event = new Event(i,EventType.EVENT_START_TO_WAIT);
-               eventQueue.add(event);
-       }
+        Event event = new Event(0, EventType.EVENT_START_TO_WAIT);
+        eventQueue.add(event);
+        Event event2 = new Event(1, EventType.EXECUTING);
+        eventQueue.add(event2);
+        Event event3 = new Event(2, EventType.EXECUTING);
+        eventQueue.add(event3);
     }
 
-    public static void printEventQueue(){
-        for (Event event:eventQueue){
-            System.out.println( event.getEventTimes());
+
+    public static void printEventQueue() {
+        for (Event event : eventQueue) {
+            System.out.println(event.getEventTimes());
         }
     }
 
-    //Requirement1
-    public static void readDocuments(){
+
+    public static void readDocuments() {
         readWorkFlow();
-        readWorkflowFile();
-        //readStationFile();
         readJobFile();
     }
 
@@ -243,197 +281,19 @@ public class Main {
         System.out.println(stars);
         System.out.println("Enter workflow file name! -For example :sample_workflow.txt");
         String workflowName = sc.nextLine();
-        String fileName = workflowName;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName));
-            String line;
-            System.out.println("--File is accessible--");
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-            reader.close();
-        } catch (IOException e) {
-            if (e instanceof FileNotFoundException) {
-                System.out.println("Error: The file does not exist or is not accessible.");
-            } else {
-                e.printStackTrace();
-            }
-        }
+        Parser kDot = new Parser(workflowName);
+        //tasks
+        tasks = kDot.getTasks();
+        sortTasks(tasks);
+        //jobTypeID
+        jobTypeIDS =kDot.getJobs();
+        //stations
+        stations = kDot.getStations();
+        kDot.printErrors();
     }
 
-    public static void readWorkflowFile() {
-        System.out.println("Enter file name for the workflow! - For example: sample_workflow.txt");
-        String fileName = sc.nextLine();
-        try {
-            File file = new File(fileName);
-            Scanner fileScanner = new Scanner(file);
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine().trim();
-                if (line.startsWith("(TASKTYPES")) {
-                    //parseTaskTypes(line, new Scanner(file));
-                } else if (line.startsWith("(JOBTYPES")) {
-                    parseJobTypes(new Scanner(file));
-                } else if (line.startsWith("(STATIONS")) {
-                    parseStations(new Scanner(file));
-                }
-            }
-            fileScanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: The file does not exist or is not accessible.");
-        }
-    }
-    public static void parseJobTypes(Scanner scanner) {
-        int lineNumber=1;
 
-        boolean jobTypesStarted = false;
-
-        while (scanner.hasNextLine()) {
-            lineNumber++;
-            String line = scanner.nextLine().trim();
-            System.out.println("Read line: " + line);
-
-            if (line.startsWith("(STATIONS")) {
-                break;
-            }
-
-            if (line.endsWith("(JOBTYPES")) {
-                jobTypesStarted = true;
-                continue;
-            }
-
-            if (jobTypesStarted) {
-                if (line.startsWith("(")) {
-                    String jobTypeLine = line.replace("(", "").trim();
-                    if (!jobTypeLine.isEmpty()) {
-                        String[] parts = jobTypeLine.split("\\s+");
-                        if (parts.length > 0) {
-                            String jobType = parts[0];
-                            Map<String, String> taskTypesWithSize = new HashMap<>();
-                            String currentTaskType = null; // Reset current task type for each job type
-
-                            for (int i = 1; i < parts.length; i++) {
-                                String part = parts[i];
-                                if (part.isEmpty() || part.equals(")")) {
-                                    continue; // Skip empty parts or closing parenthesis
-                                }
-                                // System.out.println("CHECKING PART: " + part);
-
-                                if (part.endsWith(")")) {
-                                    part = part.substring(0, part.length() - 1);
-                                }
-
-                                if (Character.isDigit(part.charAt(0))) {
-                                    // If part is a digit, it's a size
-                                    if (currentTaskType != null) {
-                                        // Add task size to the map
-                                        taskTypesWithSize.put(currentTaskType, part);
-                                    } else {
-                                        // If no task type is provided, skip this size
-                                        System.out.println("No task type found for size: " + part);
-                                        // Alert for null task type
-                                        System.out.println("ALERT: Task type is null for job type: " + jobType);
-                                    }
-                                } else {
-                                    currentTaskType = part;
-                                    taskTypesWithSize.put(currentTaskType, "null");
-                                }
-                            }
-                            // Store the job type with its task types and sizes
-                            if (jobParsedTaskTypesWithSize.containsKey(jobType)) {
-                                // If the job type already exists, merge the task types and sizes
-                                Map<String, String> existingTaskTypesWithSize = jobParsedTaskTypesWithSize.get(jobType);
-                                existingTaskTypesWithSize.putAll(taskTypesWithSize);
-                                jobParsedTaskTypesWithSize.put(jobType, existingTaskTypesWithSize);
-                            } else {
-                                // If the job type is new, simply put it in the map
-                                jobParsedTaskTypesWithSize.put(jobType, taskTypesWithSize);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /*public static void readStationFile() {
-       System.out.println("Enter file name for the stations! -For example: sample_workflow.txt");
-       String stationFileName = sc.nextLine();
-       try {
-           Scanner scanner = new Scanner(new File(stationFileName));
-           stations = parseStations(scanner); // Istasyonları ayrıştırmak için parseStations metodunu çağırıyoruz
-           scanner.close();
-       } catch (FileNotFoundException e) {
-           System.out.println("Error: The station file does not exist or is not accessible.");
-       }
-   }*/
-    public static ArrayList<Station> parseStations(Scanner scanner) {
-        int lineNumber=1;
-
-
-        while (scanner.hasNextLine()) {
-            lineNumber++;
-            String line = scanner.nextLine().trim(); // Read the entire line
-
-            if (line.equals("(STATIONS")) {
-                while (scanner.hasNextLine()) {
-                    line = scanner.nextLine().trim(); // Read the next line
-
-
-                    // If encounter "))", exit the loop
-                    if (line.equals("))")) {
-                        break;
-                    } else if (line.equals(")")) {
-                        System.err.println("Error: Single ')' encountered without station details.");// If encounter single ")", skip to the next line
-                        continue;
-                    }
-                    String[] components = line.split("\\s+");
-
-                    System.out.println("Station details: " + line);
-                    if (components.length < 4) {
-                        System.err.println("Error: Incomplete station details: " + line);
-                        continue;
-                    }
-                    if (!line.startsWith("(") || !line.endsWith(")")) {
-                        System.err.println("Line " + lineNumber + ": Invalid format.");
-                        continue;
-                    }
-
-
-
-                    // Extract station ID, max capacity, multi flag, and FIFO flag
-                    String stationID = components[0].substring(1); // Removing the opening parenthesis
-                    int maxCapacity = Integer.parseInt(components[1]);
-                    boolean multiFlag = components[2].equals("N"); // Assuming 'N' indicates false
-                    boolean fifoFlag = components[3].equals("N"); // Assuming 'N' indicates false
-
-                    // Processing task speeds and plusMinus values
-
-                    for (int i = 4; i < components.length; i += 2) {
-                        String taskTypeID = components[i];
-                        if (i + 1 < components.length && components[i + 1].matches("\\d+(\\.\\d+)?")) {
-                            // If the next element is a valid plusMinus value
-                            double taskTypeSpeed = Double.parseDouble(components[i + 1]);
-                            TaskTypeSpeedReeders.add(new TaskTypeSpeedReeder(taskTypeID, taskTypeSpeed));
-
-                        }
-                    }
-                    for(TaskTypeSpeedReeder a :getTaskTypeSpeedReeders()) {
-                        System.out.println(a.getTaskTypeID());
-                    }
-                    Station station = new Station(stationID, maxCapacity, multiFlag, fifoFlag, TaskTypeSpeedReeders);
-                    stations.add(station);
-
-                    for (Station b : stations) {
-                        System.out.println("Station ID: " + b.getStationID());
-                    }
-
-
-                }
-            }
-        }
-        return stations;
-    }
     public static void readJobFile() {
-
         System.out.println("Enter job file name! -For example :sample_jobFile.txt");
         String jobFileName = sc.nextLine();
         String fileName = jobFileName;
@@ -441,16 +301,16 @@ public class Main {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
             String line;
             int lineNumber = 0;
-            HashSet<String> jobIDs = new HashSet<>(); // To check uniqueness of job IDs
-
+            HashSet<String> jobIDs = new HashSet<>();
+            // To check uniqueness of job IDs
 
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
 
                 String[] tokens = line.split("\\s+");
 
-                if (tokens.length != 4 ) {
-                    if (reader.readLine()==null){
+                if (tokens.length != 4) {
+                    if (reader.readLine() == null) {
                         continue;
                     }
                     System.out.println("Syntax error at line " + lineNumber + ": " + line);
@@ -460,15 +320,10 @@ public class Main {
                 String jobID = tokens[0];
                 String jobTypeIDname = tokens[1];
 
-
-                    jobTypeID jobTypeID = new jobTypeID(jobTypeIDname);
-                    jobTypeIDS .add(jobTypeID);
-
-
-
+                jobTypeID jobTypeID = new jobTypeID(jobTypeIDname);
+                jobTypeIDS.add(jobTypeID);
 
                 int startTime = Integer.parseInt(tokens[2]);
-
 
                 int duration;
                 try {
@@ -489,20 +344,20 @@ public class Main {
                     continue;
                 }
 
-                int deadline = computeDeadline(duration,startTime);
+                int deadline = computeDeadline(duration, startTime);
+
+                Job job = new Job(jobID, startTime, duration, jobTypeID, deadline, jobType.WAITING_TO_START);
+                jobTypes.add(job);
 
 
 
-                Job job = new Job(jobID,startTime,duration, jobTypeID ,deadline, jobType.WAITING_TO_START);
-               jobTypes.add(job);
             }
 
-
-            double higestDeadline = 0;
-            for (Job job :jobTypes){
-                if (job.getDeadline()>higestDeadline){
-                    higestDeadline= job.getDeadline();
-                    eventTime = higestDeadline;
+            highestDeadline = 0;
+            for (Job job : jobTypes) {
+                if (job.getDeadline() > highestDeadline) {
+                    highestDeadline = job.getDeadline();
+                    eventTime = highestDeadline;
                 }
             }
 
@@ -510,170 +365,12 @@ public class Main {
         } catch (IOException e) {
             if (e instanceof FileNotFoundException) {
                 System.out.println("Error: The job file does not exist or is not accessible.");
+                System.exit(0);
             } else {
                 e.printStackTrace();
             }
         }
     }
-
-
-
-    public static void createObjectsManually(){
-
-        Task T1 = new Task("T1",1);
-        Task T2 = new Task("T2",2);
-        Task T3 = new Task("T3",2.5);
-        Task T4 = new Task("T4",1);
-        Task T5 = new Task("T3",4);
-        Task T_1 = new Task("T_1",5);
-        Task T21 = new Task("T21",1);
-
-
-
-        tasks.add(T1);
-        tasks.add(T2);
-        tasks.add(T3);
-
-        tasks.add(T2);
-        tasks.add(T3);
-        tasks.add(T4);
-
-        tasks.add(T2);
-        //tasks.add(T4);
-        //tasks.add(T5);
-        //tasks.add(T_1);
-        tasks.add(T1);
-        tasks.add(T2);
-        tasks.add(T3);
-
-        tasks.add(T2);
-        tasks.add(T3);
-        tasks.add(T4);
-
-        //Sort Task algorithm
-
-
-
-
-
-
-        // Create task lists for each job
-        ArrayList<Task> tasksForJob1 = new ArrayList<>();
-        tasksForJob1.add(tasks.get(0)); // T1
-        tasksForJob1.add(tasks.get(1)); // T2
-        tasksForJob1.add(tasks.get(2)); // T3
-
-        ArrayList<Task> tasksForJob2 = new ArrayList<>();
-        tasksForJob2.add(tasks.get(1)); // T2
-        tasksForJob2.add(tasks.get(2)); // T3
-        tasksForJob2.add(tasks.get(5)); // T4
-
-        ArrayList<Task> tasksForJob3 = new ArrayList<>();
-        tasksForJob3.add(tasks.get(7)); // T3
-
-        // Assign tasks to job types based on JobTypeID
-        for (jobTypeID jobTypeId : jobTypeIDS) {
-            switch (jobTypeId.getJobTypeID()) {
-                case "J1":
-                    jobTypeId.setTasks(tasksForJob1);
-                    break;
-                case "J2":
-                    jobTypeId.setTasks(tasksForJob2);
-                    break;
-                case "J3":
-                    jobTypeId.setTasks(tasksForJob3);
-                    break;
-            }
-        }
-
-        // Assign job type IDs to jobs
-        for (Job job : jobTypes) {
-            for (jobTypeID jobTypeId : jobTypeIDS) {
-                if (job.getJobTypeID().getJobTypeID().equals(jobTypeId.getJobTypeID())) {
-                    job.setJobTypeID(jobTypeId);
-                }
-            }
-        }
-
-        printTasksJobJobtype();
-
-
-        sortTasks(tasks);
-
-
-        TaskTypeSpeedReeder T1_S1 = new TaskTypeSpeedReeder("T1",2);
-        TaskTypeSpeedReeder T2_S2 = new TaskTypeSpeedReeder("T2",3);
-        TaskTypeSpeedReeder T2_S3 = new TaskTypeSpeedReeder("T2",4);
-        TaskTypeSpeedReeder T2_S4 = new TaskTypeSpeedReeder("T3",1);
-        TaskTypeSpeedReeder T2_S5 = new TaskTypeSpeedReeder("T4",1);
-        TaskTypeSpeedReeder T2_S6 = new TaskTypeSpeedReeder("T21",2);
-
-
-        ArrayList<TaskTypeSpeedReeder> ttsr1 =new ArrayList<>();
-        ArrayList<TaskTypeSpeedReeder> ttsr2 =new ArrayList<>();
-        ArrayList<TaskTypeSpeedReeder> ttsr3 =new ArrayList<>();
-        ArrayList<TaskTypeSpeedReeder> ttsr4 =new ArrayList<>();
-
-
-
-        ttsr1.add(T1_S1);
-        ttsr1.add(T2_S2);
-
-
-        ttsr2.add(T1_S1);
-        ttsr2.add(T2_S3);
-
-        ttsr3.add(T2_S4);
-
-        ttsr4.add(T2_S5);
-        ttsr4.add(T2_S6);
-
-        Station S1 = new Station("S1",1,false,false,ttsr1,0.2);
-        Station S2 = new Station("S2",2,true,true,ttsr2);
-        Station S3 = new Station("S3",2,false,true,ttsr3);
-        Station S4 = new Station("S4",3,true,true,ttsr4,0.5);
-
-        stations.add(S1);
-        stations.add(S2);
-        stations.add(S3);
-        stations.add(S4);
-
-
-        System.out.println("|-------------------------------|");
-        if (Event.getTimePassed()>eventTime){
-            System.out.println("|------EVENT TIME : DEADLINE PASSED------|");
-        }else {
-            System.out.println("|------EVENT TIME : "+eventTime+"--------|");
-        }
-
-        System.out.println("|-------------------------------|");
-        System.out.println();
-        Event event1 = new Event(EventType.EVENT_START_TO_WAIT,eventTime,jobTypes,stations);
-        events.add(event1);
-
-
-    }
-
-    public static void printTasksJobJobtype(){
-        for (Job job : jobTypes) {
-            System.out.println("Job ID: " + job.getJobID());
-            System.out.println("Associated Tasks:");
-            for (Task task : job.getJobTypeID().getTasks()) {
-                System.out.println(" - Task Type ID: " + task.getTaskTypeID() + ", Size: " + task.getSize());
-            }
-        }
-    }
-
-
-    public static void supplyTasksForStations(){
-        for (Station station : stations){
-            if (Event.getTimePassed() == 1){
-                station.setTasksForStations(tasks);
-            }
-        }
-    }
-
-
 
 
     public static int computeDeadline(int duration, int startTime) {
@@ -690,64 +387,85 @@ public class Main {
     }
 
 
-
-    public static void simulation() {
-        int i = 0;
+    public static void giveStationsListsForStations() {
         for (Event event : events) {
-            event.setTimePassed(0);
-            while (event.getTimeRemaining() >= 0) {
-                while (i < eventQueue.size() && event.getTimePassed() <= eventQueue.get(i).getEventTimes()) {
-                    event.setTimePassed(eventQueue.get(i).getEventTimes());
-                    event.setTimeRemaining(eventTime - Event.getTimePassed());
+            for (Station station : event.getStations()) {
+                station.setTasksForStations(new ArrayList<>()); // Ensure each station has an empty task list
+            }
+            int stationIndex = 0;
+            ArrayList<Task> tasksCopy = new ArrayList<>(tasks);
+            while (!tasksCopy.isEmpty()) {
+                Task currentTask = tasksCopy.remove(0); // Get and remove the first task from the copy list
+                boolean taskAssigned = false;
 
-                    if (event.getTimePassed() == eventQueue.get(i).getEventTimes()) {
-                        sc.nextLine();
+                for (int i = 0; i < stations.size(); i++) {
+                    Station station = stations.get(stationIndex);
+                    stationIndex = (stationIndex + 1) % stations.size(); // Move to the next station
+
+                    for (TaskTypeSpeedReeder taskTypeSpeedReeder : station.getTaskTypeSpeedReeders()) {
+                        if (taskTypeSpeedReeder.getTaskTypeID().equals(currentTask.getTaskTypeID())) {
+                            System.out.println("Assigning Task Type ID: " + currentTask.getTaskTypeID() + " to Station ID: " + station.getStationID());
+                            Task taskForStation = new Task(currentTask.getTaskTypeID(), currentTask.getSize());
+                            station.getTasksForStations().add(taskForStation);
+                            taskAssigned = true;
+                            break;
+                        }
                     }
-                    if (i > eventQueue.size()) {
+                    if (taskAssigned) {
                         break;
                     }
-
-                    i++;
-                    if (event.getTimePassed() == 1) {
-                        giveStationsListsForStations();
-                        stationsExecuteTasks();
-                    }
-                    printAllInfo(event);
                 }
-                if (i >= eventQueue.size()) {
-                    break;
+                if (!taskAssigned) {
+                    System.out.println("No station can handle the task with Task Type ID: " + currentTask.getTaskTypeID());
+                    currentTask.setTaskTypeState(TaskTypeState.NO_STATION);
+                    for (Task task : tasks) {
+                        if (task.getTaskTypeID().equals(currentTask.getTaskTypeID())) {
+                            task.setTaskTypeState(TaskTypeState.NO_STATION);
+                        }
+                    }
                 }
             }
-            event.setTimePassed(event.getTimePassed() + 1);
-            event.setEventType(EventType.TASK_COMPLETE);
-            System.out.println();
-            System.out.println("****************************");
-            System.out.println("-------EVENT COMPLETED-------");
-            System.out.println("****************************");
-            System.out.println();
-            System.out.println();
-            printAllInfo(event);
+
+            for (Station station : stations) {
+                System.out.println("Station ID: " + station.getStationID() + " has the following tasks assigned:");
+                for (Task task : station.getTasksForStations()) {
+                    System.out.println(" - Task Type ID: " + task.getTaskTypeID() + ", Size: " + task.getSize());
+                }
+            }
         }
     }
 
 
-
-
     public static void sortTasks(ArrayList<Task> tasks) {
-            for (int i = 1; i < tasks.size(); i++) {
-                Task key = tasks.get(i);
-                int j = i - 1;
+        for (int i = 1; i < tasks.size(); i++) {
+            Task key = tasks.get(i);
+            int j = i - 1;
 
-                while (j >= 0 && tasks.get(j).getSize() > key.getSize()) {
-                    tasks.set(j + 1, tasks.get(j));
-                    j = j - 1;
-                }
-                tasks.set(j + 1, key);
+            while (j >= 0 && tasks.get(j).getSize() > key.getSize()) {
+                tasks.set(j + 1, tasks.get(j));
+                j = j - 1;
             }
+            tasks.set(j + 1, key);
         }
+    }
 
 
-    public static void printAllInfo(Event event){
+    public static void printEventTime(){
+        System.out.println();
+        System.out.println();
+        System.out.println("|-------------------------------|");
+        if (Event.getTimePassed() > eventTime) {
+            System.out.println("|------EVENT TIME : DEADLINE PASSED------|");
+        } else {
+            System.out.println("| EVENT TIME : " + eventTime + "|");
+        }
+        System.out.println("|-------------------------------|");
+        System.out.println();
+        System.out.println();
+    }
+
+
+    public static void printAllInfo(Event event) {
         event.printTimePassed();
         System.out.println("-------------TASKS------------");
         event.printAllTasks();
@@ -758,18 +476,51 @@ public class Main {
         event.printStations();
         event.printStationHandlingSituation();
 
-        if (event.getTimeRemaining()<0){
+        if (event.getTimeRemaining() < 0) {
             System.out.println("---------- EVENTS------------");
             event.printEventInfoFinish();
-        }else {
+        } else {
             System.out.println("---------- EVENTS------------");
             event.printEventInfo();
         }
-
-
         System.out.println("----------------------------");
         System.out.println();
         System.out.println();
     }
-}
 
+
+
+    public static void reportAverageJobTardiness() {
+        int jobTypeSize = jobTypes.size();
+        int l = 0;
+        for (Job job : jobTypes) {
+            if (job.getJobType() == jobType.COMPLETED) {
+                l++;
+            }
+        }
+            if (jobTypeSize==0){
+                System.out.println("No completed jobs to calculate tardiness.");
+            }else {
+                double averageTardiness = (l/jobTypeSize)*100;
+                System.out.println("Average Job Tardiness: " + averageTardiness +" % ");
+                if (l==0){
+                    System.out.println("No completed jobs to calculate tardiness.");
+                }
+            }
+
+        }
+
+
+
+    public static void reportStationUtilization() {
+        for (Event event : events){
+            double totalTime = eventTime; // Use eventTime to get the total simulation time
+            for (Station station : event.getStations()) {
+                double busyTime = station.getBusyTime();
+                double utilization = (busyTime / totalTime) * 100;
+                System.out.println("Station ID: " + station.getStationID() + ", Utilization: " + utilization + "%");
+            }
+        }
+    }
+
+}

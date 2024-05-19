@@ -21,7 +21,6 @@ public class Event {
 
 
 
-
     public double getEventTimes() {
         return eventTimes;
     }
@@ -82,37 +81,33 @@ public class Event {
         this.timeRemaining = time;
     }
 
+
     public  void printJobs(){
-        for (Job job :jobTypes){
-            System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
-                    ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-getTimePassed()) +
-                    " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType());
-           // printTasks();
-
-            System.out.println();
-        }
-    }
-
-
-    public  void printStations(){
-        for (Station Station: stations){
-            System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
-                    " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
-            printTaskTypeSpeedReeders(Station);
-            System.out.println(" , Speed : "+ Station.getStationSpeed());
-
-        }
-        System.out.println();
-    }
-    /*public void printTasks(){
-        for (Job job : jobTypes ){
-            for (Task task : job.getJobTypeID().getTasks() ){
-                System.out.print(", "+ task.getTaskTypeID()+" "+ task.getSize());
+        for (Event event : Main.getEvents()){
+            for (Job job :event.getJobTypes()){
+                System.out.print("Job ID: " + job.getJobID() + ", Job TypeID: " + job.getJobTypeID().getJobTypeID() +
+                        ", Start Time: " + job.getStartTime() + ", Duration: " + (job.getDuration()-getTimePassed()) +
+                        " minutes, Deadline: " + job.getDeadline()+", Job Type: "+ job.getJobType());
+                // printTasks();
+                System.out.println();
             }
         }
     }
 
-     */
+
+    public  void printStations() {
+        for (Event event : Main.getEvents()) {
+            for (Station Station : event.getStations()) {
+                System.out.print("Station ID: " + Station.getStationID() + ", MaxCapacity : " + Station.getMaxCapacity() +
+                        " , Multiflag : " + Station.isMultiFlag() + ", FifoFlag : " + Station.isFifoFlag());
+                printTaskTypeSpeedReeders(Station);
+                System.out.println(" , Speed : " + Station.getStationSpeed());
+
+            }
+            System.out.println();
+        }
+    }
+
 
     public void printAllTasks(){
         for (Task Task :Main.getTasks()){
@@ -121,20 +116,11 @@ public class Event {
     }
 
 
-
-
-
-    public   void  printTaskTypeSpeedReeders(Station station){
-
+    public  void  printTaskTypeSpeedReeders(Station station){
             for (TaskTypeSpeedReeder taskTypeSpeedReeder:station.getTaskTypeSpeedReeders()){
                 System.out.print(" , "+ taskTypeSpeedReeder.getTaskTypeID()+" : "+taskTypeSpeedReeder.getTaskTypeSpeed());
             }
-
-
     }
-
-
-
 
 
     public void printEventInfo(){
@@ -147,18 +133,16 @@ public class Event {
 
     public  void printTimePassed(){
 
-        if (getTimePassed()>Main.eventTime){
-            System.out.println("-------------------------------");
-            System.out.println("--EVENT TIME: DEADLINE PASSED--");
-        }else {
             System.out.println("----------TIME PASSED----------");
-            System.out.println("             "+getTimePassed());
-        }
+            System.out.println("      "+getTimePassed());
+
 
     }
 
     public  void printStationHandlingSituation(){
-        for (Station station : stations){
+        if (Event.getTimePassed()>2){
+        }else {
+            for (Station station : stations){
 
                 System.out.print("STATION ID : "+station.getStationID());
                 if (station.getTasksForStations() == null ){
@@ -170,7 +154,8 @@ public class Event {
                     System.out.println();
                 }
 
-            System.out.println();
+                System.out.println();
+            }
         }
     }
 }
