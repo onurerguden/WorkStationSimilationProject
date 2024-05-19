@@ -154,13 +154,10 @@ public class Event {
     }
 
     public  void printTimePassed(){
-        if (getTimePassed()>Main.eventTime){
-            System.out.println("-------------------------------");
-            System.out.println("--EVENT TIME: DEADLINE PASSED--");
-        }else {
+
             System.out.println("----------TIME PASSED----------");
-            System.out.println("             "+getTimePassed());
-        }
+            System.out.println("      "+getTimePassed());
+
 
     }
 
