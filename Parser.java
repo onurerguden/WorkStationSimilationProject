@@ -40,6 +40,7 @@ public class Parser {
     }
 
     // Read the file
+    //REQ1
     public void read(File file) {
         try {
             readWorkflowFile(file);

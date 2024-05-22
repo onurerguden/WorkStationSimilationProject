@@ -54,7 +54,7 @@ public class Main {
         }
     }
 
-
+    //REQ6
     public static boolean isAllTasksCompleted(){
         int a = tasks.size();
         int b = 0;
@@ -98,15 +98,13 @@ public class Main {
                         printAllInfo(event);
                         stationsExecuteTasks();
                     }
-
-
                     if (event.getTimePassed() >1) {
                         for (Job job : jobTypes) {
                             isJobOnExecution(job);
                             isJobFinished(job);
                         }
                     }
-
+                    //REQ8
                     printAllInfo(event);
                     eventQueue.remove(eventQueue.getFirst());
                 }
@@ -132,7 +130,9 @@ public class Main {
     }
 
 
-
+    //REQ6
+    //REQ7
+    //REQ9 BusyTime Addition
     public static void stationsExecuteTasks() {
         for (Event event : events) {
             tasks.clear();
@@ -179,6 +179,7 @@ public class Main {
                                 isJobFinished(job);
                             }
 
+                            //req8
                             // Create event for task completion
                             createEvent(eventTime + duration, EventType.TASK_COMPLETE);
                             eventTime += duration;
@@ -200,7 +201,7 @@ public class Main {
     }
 
 
-
+    //JOB5
     public static void isJobFinished(Job job) {
         try {
             if (job.getJobTypeID() == null) {
@@ -229,7 +230,7 @@ public class Main {
 
 
 
-
+    //JOB5
     public static void isJobOnExecution(Job job) {
         boolean isExecuting = false;
         for (Task task : job.getJobTypeID().getTasks()) {
@@ -246,7 +247,7 @@ public class Main {
     }
 
 
-
+    //REQ8
     public static void createEvent(double eventTime, EventType eventType) {
         Event event = new Event(eventTime, eventType);
         eventQueue.add(event);
@@ -270,13 +271,13 @@ public class Main {
         }
     }
 
-
+    //REQ1 & REQ4
     public static void readDocuments() {
         readWorkFlow();
         readJobFile();
     }
 
-
+    //REQ1
     public static void readWorkFlow() {
         System.out.println(stars);
         System.out.println("Enter workflow file name! -For example :sample_workflow.txt");
@@ -292,7 +293,7 @@ public class Main {
         kDot.printErrors();
     }
 
-
+    //REQ4
     public static void readJobFile() {
         System.out.println("Enter job file name! -For example :sample_jobFile.txt");
         String jobFileName = sc.nextLine();
@@ -362,6 +363,9 @@ public class Main {
             }
 
             reader.close();
+
+
+            //REQ1
         } catch (IOException e) {
             if (e instanceof FileNotFoundException) {
                 System.out.println("Error: The job file does not exist or is not accessible.");
@@ -386,7 +390,8 @@ public class Main {
         return tasks;
     }
 
-
+    //REQ6
+    //REQ7
     public static void giveStationsListsForStations() {
         for (Event event : events) {
             for (Station station : event.getStations()) {
@@ -435,7 +440,7 @@ public class Main {
         }
     }
 
-
+    //REQ6
     public static void sortTasks(ArrayList<Task> tasks) {
         for (int i = 1; i < tasks.size(); i++) {
             Task key = tasks.get(i);
@@ -464,7 +469,7 @@ public class Main {
         System.out.println();
     }
 
-
+    //REQ3
     public static void printAllInfo(Event event) {
         event.printTimePassed();
         System.out.println("-------------TASKS------------");
@@ -489,7 +494,7 @@ public class Main {
     }
 
 
-
+    //REQ9
     public static void reportAverageJobTardiness() {
         int jobTypeSize = jobTypes.size();
         int l = 0;
@@ -511,7 +516,7 @@ public class Main {
         }
 
 
-
+    //REQ9
     public static void reportStationUtilization() {
         for (Event event : events){
             double totalTime = eventTime; // Use eventTime to get the total simulation time

@@ -82,6 +82,9 @@ public class Event {
     }
 
 
+
+
+    //REQ3
     public  void printJobs(){
         for (Event event : Main.getEvents()){
             for (Job job :event.getJobTypes()){
